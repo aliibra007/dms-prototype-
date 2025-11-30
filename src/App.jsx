@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { ThemeProvider } from './contexts/ThemeContext'
-import Header from './components/Header'
-import HeroSection from './components/HeroSection'
-import StatisticsSection from './components/StatisticsSection'
-import RatingsSection from './components/RatingsSection'
-import TreatmentsSection from './components/TreatmentsSection'
-import Footer from './components/Footer'
-import LoginModal from './components/LoginModal'
+import Header from './components/Patient/components/Header'
+import HeroSection from './components/Patient/components/HeroSection'
+import StatisticsSection from './components/Patient/components/StatisticsSection'
+import RatingsSection from './components/Patient/components/RatingsSection'
+import TreatmentsSection from './components/Patient/components/TreatmentsSection'
+import Footer from './components/Patient/components/Footer'
+import LoginModal from './components/Patient/components/LoginModal'
 
 function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
