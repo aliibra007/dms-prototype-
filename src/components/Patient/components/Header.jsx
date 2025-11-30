@@ -66,8 +66,6 @@ const Header = ({ onLoginClick }) => {
         className="fixed top-0 left-0 right-0 z-40 bg-primary-light dark:bg-primary-dark transition-all duration-300"
         style={{
           height: '56px',
-          borderBottomLeftRadius: '1.5rem',
-          borderBottomRightRadius: '1.5rem',
         }}
       >
         <nav className="max-w-7xl mx-auto px-4 h-full">
