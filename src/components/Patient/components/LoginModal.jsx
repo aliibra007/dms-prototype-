@@ -8,6 +8,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({
     phoneNumber: '',
+    username: '',
     fullName: '',
     dateOfBirth: '',
     gender: '',
@@ -69,12 +70,14 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   const validationPatterns = {
     phoneNumber: /^[\d\s\-\+\(\)]{10,}$/,
+    username: /^[a-zA-Z0-9._-]{3,30}$/,
     email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     fullName: /^[a-zA-Z\s]{2,50}$/,
   }
 
   const validationMessages = {
     phoneNumber: 'Please enter a valid phone number (minimum 10 digits)',
+    username: 'Username must be 3-30 characters (letters, numbers, dot, underscore, hyphen)',
     email: 'Please enter a valid email address',
     password: 'Password does not meet all requirements',
     fullName: 'Full name must be 2-50 characters (letters and spaces only)',
@@ -128,6 +131,16 @@ const LoginModal = ({ isOpen, onClose }) => {
     const errors = { ...fieldErrors }
     
     switch (name) {
+      case 'username':
+        if (!value.trim()) {
+          errors.username = 'Username is required'
+        } else if (!validationPatterns.username.test(value)) {
+          errors.username = validationMessages.username
+        } else {
+          delete errors.username
+        }
+        break
+        
       case 'phoneNumber':
         if (!value.trim()) {
           errors.phoneNumber = 'Phone number is required'
@@ -222,11 +235,11 @@ const LoginModal = ({ isOpen, onClose }) => {
 
     if (isLogin) {
       // Login validation
-      if (!formData.phoneNumber.trim()) {
-        errors.phoneNumber = 'Phone number is required'
+      if (!formData.username.trim()) {
+        errors.username = 'Username is required'
         isValid = false
-      } else if (!validationPatterns.phoneNumber.test(formData.phoneNumber.replace(/\s/g, ''))) {
-        errors.phoneNumber = validationMessages.phoneNumber
+      } else if (!validationPatterns.username.test(formData.username)) {
+        errors.username = validationMessages.username
         isValid = false
       }
       
@@ -326,6 +339,7 @@ const LoginModal = ({ isOpen, onClose }) => {
       // Reset form
       setFormData({
         phoneNumber: '',
+        username: '',
         fullName: '',
         dateOfBirth: '',
         gender: '',
@@ -367,6 +381,7 @@ const LoginModal = ({ isOpen, onClose }) => {
     setFieldErrors({})
     setFormData({
       phoneNumber: '',
+      username: '',
       fullName: '',
       dateOfBirth: '',
       gender: '',
@@ -469,34 +484,60 @@ const LoginModal = ({ isOpen, onClose }) => {
                   {/* Phone Number Field */}
                   <div>
                     <label
-                      htmlFor="phoneNumber"
+                      htmlFor={isLogin ? 'username' : 'phoneNumber'}
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                     >
-                      Phone Number <span className="text-red-500">*</span>
+                      {isLogin ? 'Username' : 'Phone Number'} <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <Phone
-                        size={20}
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                      />
-                      <input
-                        type="tel"
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handlePhoneChange}
-                        onBlur={handleBlur}
-                        placeholder="(555) 123-4567"
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
-                          fieldErrors.phoneNumber 
-                            ? 'border-red-500 dark:border-red-500' 
-                            : 'border-gray-300 dark:border-muted-dark'
-                        }`}
-                        required
-                      />
+                      {isLogin ? (
+                        <>
+                          <User
+                            size={20}
+                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                          />
+                          <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            placeholder="your.username"
+                            className={`w-full pl-10 pr-4 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
+                              fieldErrors.username 
+                                ? 'border-red-500 dark:border-red-500' 
+                                : 'border-gray-300 dark:border-muted-dark'
+                            }`}
+                            required
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Phone
+                            size={20}
+                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                          />
+                          <input
+                            type="tel"
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handlePhoneChange}
+                            onBlur={handleBlur}
+                            placeholder="(555) 123-4567"
+                            className={`w-full pl-10 pr-4 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
+                              fieldErrors.phoneNumber 
+                                ? 'border-red-500 dark:border-red-500' 
+                                : 'border-gray-300 dark:border-muted-dark'
+                            }`}
+                            required
+                          />
+                        </>
+                      )}
                     </div>
-                    {fieldErrors.phoneNumber && (
-                      <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldErrors.phoneNumber}</p>
+                    {(isLogin ? fieldErrors.username : fieldErrors.phoneNumber) && (
+                      <p className="mt-1 text-sm text-red-500 dark:text-red-400">{isLogin ? fieldErrors.username : fieldErrors.phoneNumber}</p>
                     )}
                   </div>
 
