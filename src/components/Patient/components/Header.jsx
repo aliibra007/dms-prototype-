@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Menu, Stethoscope, Bell, Sun, Moon } from 'lucide-react'
-import { useTheme } from '../contexts/ThemeContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 import Sidebar from './Sidebar'
 import UserProfileMenu from './UserProfileMenu'
 

@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Mail, Lock, Eye, EyeOff, User, Loader2, Phone, Calendar, UserCircle, ChevronDown } from 'lucide-react'
-import { useTheme } from '../contexts/ThemeContext'
+import { X, Mail, Lock, Eye, EyeOff, User, Loader2, Phone, Calendar, UserCircle, ChevronDown, Check, X as XIcon } from 'lucide-react'
+import { useTheme } from '../../../contexts/ThemeContext'
 
 const LoginModal = ({ isOpen, onClose }) => {
   const { theme } = useTheme()
-  const [isLogin, setIsLogin] = useState(true) // Toggle between login and signup
+  const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({
-    username: '',
+    phoneNumber: '',
     fullName: '',
     dateOfBirth: '',
-    phoneNumber: '',
     gender: '',
     email: '',
     password: '',
@@ -21,6 +20,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [isGenderOpen, setIsGenderOpen] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState({})
   const genderDropdownRef = useRef(null)
   
   const genderOptions = [
@@ -29,6 +29,59 @@ const LoginModal = ({ isOpen, onClose }) => {
     { value: 'other', label: 'Other' },
     { value: 'prefer-not-to-say', label: 'Prefer not to say' },
   ]
+
+  // Password validation rules
+  const passwordRules = [
+    {
+      id: 'length',
+      label: 'At least 8 characters',
+      validator: (password) => password.length >= 8
+    },
+    {
+      id: 'uppercase',
+      label: 'One uppercase letter',
+      validator: (password) => /[A-Z]/.test(password)
+    },
+    {
+      id: 'lowercase',
+      label: 'One lowercase letter',
+      validator: (password) => /[a-z]/.test(password)
+    },
+    {
+      id: 'number',
+      label: 'One number',
+      validator: (password) => /[0-9]/.test(password)
+    },
+    {
+      id: 'special',
+      label: 'One special character',
+      validator: (password) => /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    }
+  ]
+
+  // Check password rules
+  const getPasswordValidation = (password) => {
+    return passwordRules.map(rule => ({
+      ...rule,
+      isValid: rule.validator(password)
+    }))
+  }
+
+  const validationPatterns = {
+    phoneNumber: /^[\d\s\-\+\(\)]{10,}$/,
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    fullName: /^[a-zA-Z\s]{2,50}$/,
+  }
+
+  const validationMessages = {
+    phoneNumber: 'Please enter a valid phone number (minimum 10 digits)',
+    email: 'Please enter a valid email address',
+    password: 'Password does not meet all requirements',
+    fullName: 'Full name must be 2-50 characters (letters and spaces only)',
+    dateOfBirth: 'Please select a valid date of birth',
+    gender: 'Please select your gender',
+    confirmPassword: 'Passwords do not match',
+  }
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -70,51 +123,191 @@ const LoginModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen])
 
+  // Validate individual field
+  const validateField = (name, value) => {
+    const errors = { ...fieldErrors }
+    
+    switch (name) {
+      case 'phoneNumber':
+        if (!value.trim()) {
+          errors.phoneNumber = 'Phone number is required'
+        } else if (!validationPatterns.phoneNumber.test(value.replace(/\s/g, ''))) {
+          errors.phoneNumber = validationMessages.phoneNumber
+        } else {
+          delete errors.phoneNumber
+        }
+        break
+        
+      case 'email':
+        if (value && !validationPatterns.email.test(value)) {
+          errors.email = validationMessages.email
+        } else {
+          delete errors.email
+        }
+        break
+        
+      case 'password':
+        if (!value) {
+          errors.password = 'Password is required'
+        } else {
+          const passwordValidation = getPasswordValidation(value)
+          const allValid = passwordValidation.every(rule => rule.isValid)
+          if (!allValid) {
+            errors.password = validationMessages.password
+          } else {
+            delete errors.password
+          }
+        }
+        break
+        
+      case 'confirmPassword':
+        if (!value) {
+          errors.confirmPassword = 'Please confirm your password'
+        } else if (value !== formData.password) {
+          errors.confirmPassword = validationMessages.confirmPassword
+        } else {
+          delete errors.confirmPassword
+        }
+        break
+        
+      case 'fullName':
+        if (!value.trim()) {
+          errors.fullName = 'Full name is required'
+        } else if (!validationPatterns.fullName.test(value)) {
+          errors.fullName = validationMessages.fullName
+        } else {
+          delete errors.fullName
+        }
+        break
+        
+      case 'dateOfBirth':
+        if (!value) {
+          errors.dateOfBirth = validationMessages.dateOfBirth
+        } else {
+          const dob = new Date(value)
+          const today = new Date()
+          const age = today.getFullYear() - dob.getFullYear()
+          if (age < 13 || age > 120) {
+            errors.dateOfBirth = 'Age must be between 13 and 120 years'
+          } else {
+            delete errors.dateOfBirth
+          }
+        }
+        break
+        
+      case 'gender':
+        if (!value) {
+          errors.gender = validationMessages.gender
+        } else {
+          delete errors.gender
+        }
+        break
+        
+      default:
+        break
+    }
+    
+    setFieldErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setIsLoading(true)
 
-    // Validation
+    // Validate all required fields
+    let isValid = true
+    const errors = {}
+
     if (isLogin) {
-      if (!formData.username || !formData.password) {
-        setError('Please fill in all required fields')
-        setIsLoading(false)
-        return
+      // Login validation
+      if (!formData.phoneNumber.trim()) {
+        errors.phoneNumber = 'Phone number is required'
+        isValid = false
+      } else if (!validationPatterns.phoneNumber.test(formData.phoneNumber.replace(/\s/g, ''))) {
+        errors.phoneNumber = validationMessages.phoneNumber
+        isValid = false
+      }
+      
+      if (!formData.password) {
+        errors.password = 'Password is required'
+        isValid = false
+      } else {
+        const passwordValidation = getPasswordValidation(formData.password)
+        const allValid = passwordValidation.every(rule => rule.isValid)
+        if (!allValid) {
+          errors.password = validationMessages.password
+          isValid = false
+        }
       }
     } else {
-      // Signup validation - all fields required except email
-      if (!formData.username || !formData.fullName || !formData.dateOfBirth || 
-          !formData.phoneNumber || !formData.gender || !formData.password || !formData.confirmPassword) {
-        setError('Please fill in all required fields')
-        setIsLoading(false)
-        return
+      // Signup validation
+      if (!formData.phoneNumber.trim()) {
+        errors.phoneNumber = 'Phone number is required'
+        isValid = false
+      } else if (!validationPatterns.phoneNumber.test(formData.phoneNumber.replace(/\s/g, ''))) {
+        errors.phoneNumber = validationMessages.phoneNumber
+        isValid = false
       }
       
-      // Email validation (optional but if provided, must be valid)
-      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        setError('Please enter a valid email address')
-        setIsLoading(false)
-        return
+      if (!formData.fullName.trim()) {
+        errors.fullName = 'Full name is required'
+        isValid = false
+      } else if (!validationPatterns.fullName.test(formData.fullName)) {
+        errors.fullName = validationMessages.fullName
+        isValid = false
       }
       
-      if (formData.password !== formData.confirmPassword) {
-        setError('Passwords do not match')
-        setIsLoading(false)
-        return
-      }
-      if (formData.password.length < 6) {
-        setError('Password must be at least 6 characters')
-        setIsLoading(false)
-        return
+      if (!formData.dateOfBirth) {
+        errors.dateOfBirth = validationMessages.dateOfBirth
+        isValid = false
+      } else {
+        const dob = new Date(formData.dateOfBirth)
+        const today = new Date()
+        const age = today.getFullYear() - dob.getFullYear()
+        if (age < 13 || age > 120) {
+          errors.dateOfBirth = 'Age must be between 13 and 120 years'
+          isValid = false
+        }
       }
       
-      // Phone number validation
-      if (!/^[\d\s\-\+\(\)]+$/.test(formData.phoneNumber)) {
-        setError('Please enter a valid phone number')
-        setIsLoading(false)
-        return
+      if (!formData.gender) {
+        errors.gender = validationMessages.gender
+        isValid = false
       }
+      
+      if (!formData.password) {
+        errors.password = 'Password is required'
+        isValid = false
+      } else {
+        const passwordValidation = getPasswordValidation(formData.password)
+        const allValid = passwordValidation.every(rule => rule.isValid)
+        if (!allValid) {
+          errors.password = validationMessages.password
+          isValid = false
+        }
+      }
+      
+      if (!formData.confirmPassword) {
+        errors.confirmPassword = 'Please confirm your password'
+        isValid = false
+      } else if (formData.password !== formData.confirmPassword) {
+        errors.confirmPassword = validationMessages.confirmPassword
+        isValid = false
+      }
+      
+      // Email validation (optional)
+      if (formData.email && !validationPatterns.email.test(formData.email)) {
+        errors.email = validationMessages.email
+        isValid = false
+      }
+    }
+
+    if (!isValid) {
+      setFieldErrors(errors)
+      setIsLoading(false)
+      return
     }
 
     // Simulate API call
@@ -132,15 +325,15 @@ const LoginModal = ({ isOpen, onClose }) => {
       onClose()
       // Reset form
       setFormData({
-        username: '',
+        phoneNumber: '',
         fullName: '',
         dateOfBirth: '',
-        phoneNumber: '',
         gender: '',
         email: '',
         password: '',
         confirmPassword: '',
       })
+      setFieldErrors({})
     } catch (err) {
       setError(isLogin ? 'Login failed. Please try again.' : 'Signup failed. Please try again.')
     } finally {
@@ -154,23 +347,70 @@ const LoginModal = ({ isOpen, onClose }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
+    
+    // Clear error when user starts typing
+    if (fieldErrors[name]) {
+      validateField(name, type === 'checkbox' ? checked : value)
+    }
+    
     setError('')
+  }
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target
+    validateField(name, value)
   }
 
   const toggleMode = () => {
     setIsLogin(!isLogin)
     setError('')
+    setFieldErrors({})
     setFormData({
-      username: '',
+      phoneNumber: '',
       fullName: '',
       dateOfBirth: '',
-      phoneNumber: '',
       gender: '',
       email: '',
       password: '',
       confirmPassword: '',
     })
   }
+
+  // Format phone number as user types
+  const formatPhoneNumber = (value) => {
+    // Remove all non-digit characters
+    const cleaned = value.replace(/\D/g, '')
+    
+    // Format based on length
+    if (cleaned.length <= 3) {
+      return cleaned
+    } else if (cleaned.length <= 6) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`
+    } else if (cleaned.length <= 10) {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+    } else {
+      return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`
+    }
+  }
+
+  const handlePhoneChange = (e) => {
+    const { value } = e.target
+    const formattedValue = formatPhoneNumber(value)
+    
+    setFormData((prev) => ({
+      ...prev,
+      phoneNumber: formattedValue,
+    }))
+    
+    if (fieldErrors.phoneNumber) {
+      validateField('phoneNumber', formattedValue)
+    }
+    
+    setError('')
+  }
+
+  // Get password validation results
+  const passwordValidation = getPasswordValidation(formData.password)
 
   return (
     <AnimatePresence>
@@ -226,30 +466,38 @@ const LoginModal = ({ isOpen, onClose }) => {
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-5" style={{ padding: '0 4px' }}>
-                  {/* Username Field */}
+                  {/* Phone Number Field */}
                   <div>
                     <label
-                      htmlFor="username"
+                      htmlFor="phoneNumber"
                       className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                     >
-                      Username <span className="text-red-500">*</span>
+                      Phone Number <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <UserCircle
+                      <Phone
                         size={20}
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                       />
                       <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        placeholder="Enter your username"
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-muted-dark rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all"
+                        type="tel"
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handlePhoneChange}
+                        onBlur={handleBlur}
+                        placeholder="(555) 123-4567"
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
+                          fieldErrors.phoneNumber 
+                            ? 'border-red-500 dark:border-red-500' 
+                            : 'border-gray-300 dark:border-muted-dark'
+                        }`}
                         required
                       />
                     </div>
+                    {fieldErrors.phoneNumber && (
+                      <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldErrors.phoneNumber}</p>
+                    )}
                   </div>
 
                   {/* Signup Only Fields */}
@@ -274,11 +522,19 @@ const LoginModal = ({ isOpen, onClose }) => {
                             name="fullName"
                             value={formData.fullName}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="John Doe"
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-muted-dark rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all"
+                            className={`w-full pl-10 pr-4 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
+                              fieldErrors.fullName 
+                                ? 'border-red-500 dark:border-red-500' 
+                                : 'border-gray-300 dark:border-muted-dark'
+                            }`}
                             required
                           />
                         </div>
+                        {fieldErrors.fullName && (
+                          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldErrors.fullName}</p>
+                        )}
                       </div>
 
                       {/* Date of Birth Field */}
@@ -300,36 +556,19 @@ const LoginModal = ({ isOpen, onClose }) => {
                             name="dateOfBirth"
                             value={formData.dateOfBirth}
                             onChange={handleChange}
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-muted-dark rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all"
+                            onBlur={handleBlur}
+                            max={new Date().toISOString().split('T')[0]}
+                            className={`w-full pl-10 pr-4 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
+                              fieldErrors.dateOfBirth 
+                                ? 'border-red-500 dark:border-red-500' 
+                                : 'border-gray-300 dark:border-muted-dark'
+                            }`}
                             required
                           />
                         </div>
-                      </div>
-
-                      {/* Phone Number Field */}
-                      <div>
-                        <label
-                          htmlFor="phoneNumber"
-                          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                        >
-                          Phone Number <span className="text-red-500">*</span>
-                        </label>
-                        <div className="relative">
-                          <Phone
-                            size={20}
-                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                          />
-                          <input
-                            type="tel"
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            placeholder="+1 (555) 123-4567"
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-muted-dark rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all"
-                            required
-                          />
-                        </div>
+                        {fieldErrors.dateOfBirth && (
+                          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldErrors.dateOfBirth}</p>
+                        )}
                       </div>
 
                       {/* Gender Field - Custom Dropdown */}
@@ -343,7 +582,11 @@ const LoginModal = ({ isOpen, onClose }) => {
                         <button
                           type="button"
                           onClick={() => setIsGenderOpen(!isGenderOpen)}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-muted-dark rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all flex items-center justify-between"
+                          className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all flex items-center justify-between ${
+                            fieldErrors.gender 
+                              ? 'border-red-500 dark:border-red-500' 
+                              : 'border-gray-300 dark:border-muted-dark'
+                          }`}
                         >
                           <span className={formData.gender ? '' : 'text-gray-400'}>
                             {formData.gender
@@ -355,6 +598,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                             className={`text-gray-400 transition-transform ${isGenderOpen ? 'rotate-180' : ''}`}
                           />
                         </button>
+                        {fieldErrors.gender && (
+                          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldErrors.gender}</p>
+                        )}
                         <AnimatePresence>
                           {isGenderOpen && (
                             <motion.div
@@ -372,6 +618,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                                     setFormData((prev) => ({ ...prev, gender: option.value }))
                                     setIsGenderOpen(false)
                                     setError('')
+                                    validateField('gender', option.value)
                                   }}
                                   className={`w-full text-left px-4 py-3 hover:bg-muted-light dark:hover:bg-muted-dark transition-colors first:rounded-t-lg last:rounded-b-lg ${
                                     formData.gender === option.value
@@ -413,10 +660,18 @@ const LoginModal = ({ isOpen, onClose }) => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="you@example.com"
-                            className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-muted-dark rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all"
+                            className={`w-full pl-10 pr-4 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
+                              fieldErrors.email 
+                                ? 'border-red-500 dark:border-red-500' 
+                                : 'border-gray-300 dark:border-muted-dark'
+                            }`}
                           />
                         </div>
+                        {fieldErrors.email && (
+                          <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldErrors.email}</p>
+                        )}
                       </div>
                     </>
                   )}
@@ -440,8 +695,13 @@ const LoginModal = ({ isOpen, onClose }) => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         placeholder="Enter your password"
-                        className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-muted-dark rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all"
+                        className={`w-full pl-10 pr-12 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
+                          fieldErrors.password 
+                            ? 'border-red-500 dark:border-red-500' 
+                            : 'border-gray-300 dark:border-muted-dark'
+                        }`}
                         required
                       />
                       <button
@@ -452,6 +712,29 @@ const LoginModal = ({ isOpen, onClose }) => {
                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                       </button>
                     </div>
+                    
+                    {/* Password Strength Rules */}
+                    {!isLogin && formData.password && (
+                      <div className="mt-3 space-y-2">
+                        {passwordValidation.map((rule) => (
+                          <div key={rule.id} className="flex items-center space-x-2">
+                            {rule.isValid ? (
+                              <Check size={16} className="text-green-500 flex-shrink-0" />
+                            ) : (
+                              <XIcon size={16} className="text-gray-400 flex-shrink-0" />
+                            )}
+                            <span className={`text-sm ${rule.isValid ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                              {rule.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {fieldErrors.password && (
+                      <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldErrors.password}</p>
+                    )}
+                    
                     {/* Forgot Password Link (Login only) */}
                     {isLogin && (
                       <div className="mt-2">
@@ -485,8 +768,13 @@ const LoginModal = ({ isOpen, onClose }) => {
                           name="confirmPassword"
                           value={formData.confirmPassword}
                           onChange={handleChange}
+                          onBlur={handleBlur}
                           placeholder="Confirm your password"
-                          className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-muted-dark rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all"
+                          className={`w-full pl-10 pr-12 py-3 border rounded-lg bg-white dark:bg-secondary-dark text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark focus:border-transparent transition-all ${
+                            fieldErrors.confirmPassword 
+                              ? 'border-red-500 dark:border-red-500' 
+                              : 'border-gray-300 dark:border-muted-dark'
+                          }`}
                           required
                         />
                         <button
@@ -497,6 +785,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                           {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       </div>
+                      {fieldErrors.confirmPassword && (
+                        <p className="mt-1 text-sm text-red-500 dark:text-red-400">{fieldErrors.confirmPassword}</p>
+                      )}
                     </div>
                   )}
 
@@ -510,7 +801,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoading || Object.keys(fieldErrors).length > 0}
                     className="w-full py-3 px-4 bg-primary-light dark:bg-primary-dark text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   >
                     {isLoading ? (
@@ -545,4 +836,3 @@ const LoginModal = ({ isOpen, onClose }) => {
 }
 
 export default LoginModal
-

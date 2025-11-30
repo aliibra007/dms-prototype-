@@ -1,7 +1,7 @@
 import React from 'react'
 import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useTheme } from '../contexts/ThemeContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 
 const Sidebar = ({ isOpen, onClose, navItems, onNavClick }) => {
   const { theme } = useTheme()
