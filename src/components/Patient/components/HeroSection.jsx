@@ -1,8 +1,10 @@
 import React from 'react'
 import { Calendar, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 
 const HeroSection = () => {
+  const navigate = useNavigate()
   return (
     <section
       id="home"
@@ -73,6 +75,7 @@ const HeroSection = () => {
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               className="flex items-center justify-center space-x-2 px-8 py-4 bg-primary-light dark:bg-primary-dark text-white rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-shadow backdrop-blur-sm"
+              onClick={() => navigate('/book-visit')}
             >
               <Calendar size={20} />
               <span>Book Ur Visit Now</span>
