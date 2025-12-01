@@ -9,6 +9,11 @@ import Footer from './components/Patient/components/Footer'
 import LoginModal from './components/Patient/components/LoginModal'
 import { Routes, Route } from 'react-router-dom'
 import BookVisitPage from './pages/BookVisitPage'
+import DoctorLayout from './components/doctor/layout/DoctorLayout'
+import DashboardPage from './components/doctor/pages/DashboardPage'
+import AppointmentsPage from './components/doctor/pages/AppointmentsPage'
+import FinancePage from './components/doctor/pages/FinancePage'
+import PlaceholderPage from './components/doctor/pages/PlaceholderPage'
 
 function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
@@ -33,6 +38,16 @@ function App() {
           }
         />
         <Route path="/book-visit" element={<BookVisitPage />} />
+        <Route path="/doctor/*" element={<DoctorLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="schedule" element={<AppointmentsPage />} />
+          <Route path="patients" element={<PlaceholderPage title="Patient Records" />} />
+          <Route path="prescription" element={<PlaceholderPage title="Prescription Center" />} />
+          <Route path="invoices" element={<FinancePage />} />
+          <Route path="messaging" element={<PlaceholderPage title="Messaging" />} />
+          <Route path="profile" element={<PlaceholderPage title="Profile & Settings" />} />
+          <Route path="*" element={<PlaceholderPage title="Coming Soon" />} />
+        </Route>
       </Routes>
     </ThemeProvider>
   )

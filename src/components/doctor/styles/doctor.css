@@ -1,0 +1,15 @@
+.doctor-root .animated-border-card { position: relative; }
+.doctor-root .animated-border-card::before { content: ''; position: absolute; inset: -3px; border-radius: 18px; padding: 3px; background: linear-gradient(135deg, #0D47A1, #1565C0, #1976D2, #1E88E5); background-size: 400% 400%; -webkit-mask: linear-gradient(#fff, #fff) content-box, linear-gradient(#fff, #fff); -webkit-mask-composite: xor; mask: linear-gradient(#fff, #fff) content-box, linear-gradient(#fff, #fff); mask-composite: exclude; pointer-events: none; animation: doctor-border-flow 2.5s linear infinite; box-shadow: 0 0 20px rgba(13, 71, 161, 0.6), inset 0 0 20px rgba(13, 71, 161, 0.3); }
+@keyframes doctor-border-flow { 0% { background: linear-gradient(135deg, #0D47A1, #1565C0, #1976D2, #1E88E5);} 20% { background: linear-gradient(135deg, #1565C0, #1976D2, #1E88E5, #2196F3);} 40% { background: linear-gradient(135deg, #1976D2, #1E88E5, #2196F3, #00BCD4);} 60% { background: linear-gradient(135deg, #1E88E5, #2196F3, #00BCD4, #00ACC1);} 80% { background: linear-gradient(135deg, #2196F3, #00BCD4, #1565C0, #0D47A1);} 100% { background: linear-gradient(135deg, #0D47A1, #1565C0, #1976D2, #1E88E5);} }
+.doctor-root .particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; animation: doctor-float 10s infinite ease-in-out; }
+@keyframes doctor-float { 0%,100% { transform: translateY(0) translateX(0);} 25% { transform: translateY(-30px) translateX(20px);} 50% { transform: translateY(-60px) translateX(-20px);} 75% { transform: translateY(-30px) translateX(30px);} }
+.doctor-root .wave-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 200px; overflow: hidden; }
+.doctor-root .wave { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%; animation: doctor-wave-flow 15s infinite linear; }
+.doctor-root .wave2 { animation-delay: -5s; opacity: 0.5; }
+.doctor-root .wave3 { animation-delay: -10s; opacity: 0.3; }
+@keyframes doctor-wave-flow { 0% { transform: translateX(0);} 100% { transform: translateX(-50%);} }
+.doctor-root .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: doctor-rotate-orb 20s infinite ease-in-out; }
+.doctor-root .orb1 { width: 400px; height: 400px; top: 10%; left: 10%; }
+.doctor-root .orb2 { width: 300px; height: 300px; top: 50%; right: 10%; animation-delay: -7s; }
+.doctor-root .orb3 { width: 350px; height: 350px; bottom: 10%; left: 50%; animation-delay: -14s; }
+@keyframes doctor-rotate-orb { 0%,100% { transform: translate(0, 0) scale(1);} 33% { transform: translate(50px, -50px) scale(1.1);} 66% { transform: translate(-50px, 50px) scale(0.9);} }
