@@ -11,6 +11,8 @@ export const API_ENDPOINTS = {
     invoices: `${API_BASE_URL}/finance/invoices`,
     payments: `${API_BASE_URL}/finance/payments`,
     statistics: `${API_BASE_URL}/finance/statistics`,
+    revenue: `${API_BASE_URL}/finance/revenue`,
+    markPaid: (id) => `${API_BASE_URL}/finance/invoices/${id}/mark-paid`,
   },
 };
 
@@ -66,5 +68,23 @@ export const financeAPI = {
   },
   getStatistics: (range) => {
     return apiRequest(`${API_ENDPOINTS.finance.statistics}?range=${range}`);
+  },
+  getRevenue: (range) => {
+    // TODO: connect to backend revenue endpoint
+    return apiRequest(`${API_ENDPOINTS.finance.revenue}?range=${range}`);
+  },
+  markInvoicePaid: (invoiceId, paymentMethod) => {
+    // TODO: backend should accept payment method in body
+    return apiRequest(API_ENDPOINTS.finance.markPaid(invoiceId), {
+      method: 'POST',
+      body: JSON.stringify({ payment_method: paymentMethod }),
+    });
+  },
+  createInvoice: (invoice) => {
+    // TODO: backend should validate invoice payload
+    return apiRequest(API_ENDPOINTS.finance.invoices, {
+      method: 'POST',
+      body: JSON.stringify(invoice),
+    });
   },
 };

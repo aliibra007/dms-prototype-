@@ -135,3 +135,50 @@ Infrastructure/
 ├── SmsService.cs
 ├── PaymentGatewayService.cs
 └── FileStorageService.cs
+
+---
+
+## Doctor Dashboard Integration
+
+Frontend doctor UI has been integrated into the patient app with an isolated module to avoid breaking existing behavior and styling.
+
+Location:
+
+src/
+├── doctor/
+│   ├── pages/
+│   │   └── DoctorDashboard.jsx
+│   ├── components/
+│   │   ├── ScheduleQueue.js
+│   │   └── finance/
+│   │       ├── Finance.jsx
+│   │       ├── CreateInvoiceModal.jsx
+│   │       ├── SearchFilter.jsx
+│   │       ├── StatCard.jsx
+│   │       ├── StatusBadge.jsx
+│   │       └── tabs/
+│   │           ├── OverviewTab.jsx
+│   │           ├── InvoicesTab.jsx
+│   │           └── PaymentsTab.jsx
+│   ├── hooks/
+│   │   └── useFinanceData.js
+│   └── styles/
+│       └── doctor.css
+
+Routing:
+- New route path: `/doctor` renders `DoctorDashboard`.
+- All existing patient routes remain unchanged.
+- Landing page includes a temporary button "Go to Doctor Dashboard (TEMP)" linking to `/doctor` until proper auth is added.
+
+APIs:
+- Unified API module: `src/services/api.js`
+- Added endpoints (stubs) under `API_ENDPOINTS.finance`:
+  - `GET /finance/statistics?range=...`
+  - `GET /finance/revenue?range=...`
+  - `GET /finance/invoices?include_patient=true&include_appointment=true`
+  - `POST /finance/invoices` (create invoice)
+  - `POST /finance/invoices/{id}/mark-paid` (mark invoice paid)
+
+Notes:
+- Endpoints above are placeholders/TODOs pending backend availability. Update `VITE_API_BASE_URL` and implement controllers/actions accordingly.
+- Eventually, backend authentication should differentiate Patient vs Doctor access (roles/claims). The temporary landing button should be removed once auth and role-based routing are in place.

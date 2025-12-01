@@ -3,6 +3,7 @@ import { Menu, Stethoscope, Bell, Sun, Moon } from 'lucide-react'
 import { useTheme } from '../../../contexts/ThemeContext'
 import Sidebar from './Sidebar'
 import UserProfileMenu from './UserProfileMenu'
+import { Link } from 'react-router-dom'
 
 const Header = ({ onLoginClick }) => {
   const { theme, toggleTheme } = useTheme()
@@ -106,6 +107,15 @@ const Header = ({ onLoginClick }) => {
                   <Sun size={20} className="text-white" />
                 )}
               </button>
+
+              {/* TEMP: Doctor Dashboard quick nav */}
+              <Link
+                to="/doctor"
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm text-white font-bold hover:bg-white/30 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+                aria-label="Doctor Dashboard"
+              >
+                <span className="text-sm">D</span>
+              </Link>
 
               {/* Notifications */}
               {isLoggedIn && (
