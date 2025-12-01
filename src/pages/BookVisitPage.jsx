@@ -18,6 +18,7 @@ const BookVisitPage = () => {
   const [error, setError] = useState('')
   const [schedule, setSchedule] = useState(null)
   const [appointmentsISO, setAppointmentsISO] = useState([])
+  const [isTimeModalOpen, setIsTimeModalOpen] = useState(false)
 
   const selectedDoctor = useMemo(() => doctors.find(d => d.id === selectedDoctorId), [doctors, selectedDoctorId])
 
@@ -82,39 +83,21 @@ const BookVisitPage = () => {
             />
           </section>
 
-          {/* Step 2 & 3: Date and Time side by side */}
+          {/* Step 2 & 3: Date then Time (Time opens in modal) */}
           <section>
             <h2 className="text-xl font-semibold mb-3">Step 2: Choose Date & Time</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {/* Calendar Card */}
               <AppointmentCalendar
                 selectedDate={selectedDate}
-                onChange={(d) => { setSelectedDate(d); setSelectedTime(''); }}
+                onChange={(d) => { setSelectedDate(d); setSelectedTime(''); setIsTimeModalOpen(true); }}
                 schedule={schedule}
                 appointmentsISO={appointmentsISO}
                 disabled={loading || !selectedDoctorId}
               />
-
-              {/* Time Card */}
-              <div className="rounded-xl border border-gray-200 dark:border-muted-dark bg-white dark:bg-secondary-dark shadow-sm overflow-hidden">
-                <div className="px-4 py-3 border-b border-gray-100 dark:border-muted-dark">
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">Select Time</h3>
-                </div>
-                <div className="p-4">
-                  {selectedDate ? (
-                    <TimeSelector
-                      schedule={schedule}
-                      date={selectedDate}
-                      bookedSlotsISO={bookedSlotsForSelectedDate}
-                      value={selectedTime}
-                      onChange={setSelectedTime}
-                      disabled={loading || !selectedDoctorId || !selectedDate}
-                    />
-                  ) : (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Pick a date to see available time slots.</p>
-                  )}
-                </div>
-              </div>
+              {!selectedDate && (
+                <p className="text-sm text-gray-600 dark:text-gray-400">Pick a date to choose available time slots.</p>
+              )}
             </div>
           </section>
 
@@ -139,6 +122,47 @@ const BookVisitPage = () => {
         </div>
       </main>
       <Footer />
+
+      {/* Time Selection Modal */}
+      {isTimeModalOpen && selectedDate && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-[60] bg-black/50 dark:bg-black/70 backdrop-blur-md"
+            onClick={() => setIsTimeModalOpen(false)}
+          />
+          {/* Modal Panel */}
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ overflow: 'auto' }}>
+            <div
+              className="relative w-full max-w-md bg-white dark:bg-secondary-dark rounded-2xl shadow-2xl p-6 sm:p-8 my-auto"
+              onClick={(e) => e.stopPropagation()}
+              style={{ maxHeight: 'calc(100vh - 2rem)', overflow: 'auto', position: 'relative' }}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setIsTimeModalOpen(false)}
+                className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-muted-light dark:hover:bg-muted-dark transition-colors focus:outline-none"
+                type="button"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+
+              <div className="mt-2">
+                <h3 className="text-lg font-semibold mb-3">Select Time</h3>
+                <TimeSelector
+                  schedule={schedule}
+                  date={selectedDate}
+                  bookedSlotsISO={bookedSlotsForSelectedDate}
+                  value={selectedTime}
+                  onChange={(t) => { setSelectedTime(t); setIsTimeModalOpen(false) }}
+                  disabled={loading || !selectedDoctorId || !selectedDate}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
