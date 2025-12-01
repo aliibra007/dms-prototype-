@@ -2,6 +2,7 @@ import React from 'react'
 import { Calendar, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import heroImage from '../../../images/herosectionimage.jpg'
 
 const HeroSection = () => {
   const navigate = useNavigate()
@@ -11,22 +12,24 @@ const HeroSection = () => {
       className="relative min-h-[600px] flex items-center justify-center overflow-hidden"
       style={{ minHeight: '600px', paddingTop: '0' }}
     >
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+      {/* Mobile Background Image */}
+      <div className="absolute inset-0 z-0 md:hidden">
         <img
-          src="https://images.unsplash.com/photo-1606811971618-4486c565f4fa?w=1920&q=80"
+          src={heroImage}
           alt="Modern dental clinic"
           className="w-full h-full object-cover"
-          onError={(e) => {
-            e.target.style.display = 'none'
-          }}
         />
         <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/80"></div>
       </div>
 
+      {/* Desktop Background Overlay */}
+      <div className="hidden md:block absolute inset-0 z-0 bg-white/50 dark:bg-gray-900/80"></div>
+
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-        <div className="max-w-2xl relative z-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Text Content */}
+          <div className="max-w-2xl relative z-20 md:z-10">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 10 }}
@@ -89,6 +92,24 @@ const HeroSection = () => {
               <span>Learn More</span>
               <ArrowRight size={20} />
             </motion.button>
+          </motion.div>
+          </div>
+
+          {/* Desktop Image */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
+            className="hidden md:block relative z-10"
+          >
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+              <img
+                src={heroImage}
+                alt="Modern dental clinic"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
           </motion.div>
         </div>
       </div>

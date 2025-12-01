@@ -1,5 +1,5 @@
 import React from 'react'
-import { Calendar as UiCalendar } from '@/components/ui/calendar'
+import { Calendar as UiCalendar } from '../../../ui/calendar'
 
 // Props:
 // - selectedDate: Date | null
