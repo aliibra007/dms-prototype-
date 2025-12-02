@@ -16,6 +16,8 @@ import FinancePage from './components/doctor/pages/FinancePage'
 import PlaceholderPage from './components/doctor/pages/PlaceholderPage'
 import WebsiteSettings from './components/doctor/pages/WebsiteSettings'
 
+import PatientRecordsPage from './components/doctor/pages/PatientRecordsPage'
+
 function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
 
@@ -42,7 +44,7 @@ function App() {
         <Route path="/doctor/*" element={<DoctorLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="schedule" element={<AppointmentsPage />} />
-          <Route path="patients" element={<PlaceholderPage title="Patient Records" />} />
+          <Route path="patients" element={<PatientRecordsPage />} />
           <Route path="prescription" element={<PlaceholderPage title="Prescription Center" />} />
           <Route path="invoices" element={<FinancePage />} />
           <Route path="messaging" element={<PlaceholderPage title="Messaging" />} />
