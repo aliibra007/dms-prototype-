@@ -99,7 +99,7 @@ export default function DashboardPage() {
               <XAxis dataKey="month" stroke={isDark ? COLORS.dark.text : COLORS.light.text} />
               <YAxis stroke={isDark ? COLORS.dark.text : COLORS.light.text} />
               <Tooltip contentStyle={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-              <Bar dataKey="total" fill="#F59E0B" radius={[8,8,0,0]} />
+              <Bar dataKey="total" fill="#F59E0B" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -112,7 +112,7 @@ export default function DashboardPage() {
             <button className="text-sm font-semibold" style={{ color: isDark ? COLORS.dark.accent : COLORS.light.accent }}>View All</button>
           </div>
           <div className="space-y-4">
-            {[{id:1,action:'New patient registered',patient:'John Doe',time:'10 minutes ago'}, {id:2,action:'Appointment completed',patient:'Jane Smith',time:'25 minutes ago'}, {id:3,action:'Prescription issued',patient:'Mike Johnson',time:'1 hour ago'}, {id:4,action:'Payment received',patient:'Sarah Williams',time:'2 hours ago'}].map(a => (
+            {[{ id: 1, action: 'New patient registered', patient: 'John Doe', time: '10 minutes ago' }, { id: 2, action: 'Appointment completed', patient: 'Jane Smith', time: '25 minutes ago' }, { id: 3, action: 'Prescription issued', patient: 'Mike Johnson', time: '1 hour ago' }, { id: 4, action: 'Payment received', patient: 'Sarah Williams', time: '2 hours ago' }].map(a => (
               <div key={a.id} className="flex items-start gap-3 p-3 rounded-lg border" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, background: isDark ? `${COLORS.dark.secondary}80` : `${COLORS.light.secondary}` }}>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: isDark ? `${COLORS.dark.accent}20` : `${COLORS.light.accent}20`, color: isDark ? COLORS.dark.accent : COLORS.light.accent }}>
                   <Activity size={20} />
