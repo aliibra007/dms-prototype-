@@ -1,0 +1,26 @@
+export const COLORS = {
+    light: {
+        primary: '#7C3AED',
+        secondary: '#F1F5F9',
+        accent: '#0EA5E9',
+        muted: '#E2E8F0',
+        text: '#1F2937',
+        cardBg: '#FFFFFF',
+        success: '#10B981',
+        warning: '#F59E0B',
+        danger: '#EF4444',
+        border: '#E5E7EB',
+    },
+    dark: {
+        primary: '#A78BFA',
+        secondary: '#1E293B',
+        accent: '#38BDF8',
+        muted: '#475569',
+        text: '#F1F5F9',
+        cardBg: '#1E293B',
+        success: '#34D399',
+        warning: '#FBBF24',
+        danger: '#F87171',
+        border: '#334155',
+    },
+};

@@ -5,190 +5,10 @@ import {
     ChevronRight, Paperclip, X, Stethoscope, Pill, AlertCircle,
     Edit2, Trash2, Eye, Download, Clock, AlertTriangle, File, Lightbulb
 } from 'lucide-react';
+import { COLORS } from '../styles/theme';
+import { MOCK_PATIENTS } from '../data/MockData';
+import MedicalBackground from '../components/shared/MedicalBackground';
 
-const COLORS = {
-    light: {
-        primary: '#6739B6',
-        secondary: '#EFF1F5',
-        accent: '#0DA2E7',
-        muted: '#6B7280', // Darker gray for better contrast on light bg
-        text: '#1F2937',
-        cardBg: '#FFFFFF',
-        success: '#10B981',
-        warning: '#F59E0B',
-        danger: '#EF4444',
-        border: '#E5E7EB',
-    },
-    dark: {
-        primary: '#9B7DCD',
-        secondary: '#181C24',
-        accent: '#30ADE8',
-        muted: '#94A3B8', // Lighter gray for better contrast on dark bg
-        text: '#F1F5F9',
-        cardBg: '#1E293B',
-        success: '#34D399',
-        warning: '#FBBF24',
-        danger: '#F87171',
-        border: '#334155',
-    },
-};
-
-// Expanded Mock Data
-const MOCK_PATIENTS = [
-    {
-        id: 1,
-        name: 'Emily Carter',
-        age: 28,
-        gender: 'Female',
-        bloodType: 'A+',
-        contact: '+1 234-567-8901',
-        image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-        history: [
-            {
-                id: 101,
-                date: '2023-10-25',
-                diagnosis: 'Acute Bronchitis',
-                symptoms: 'Persistent cough, low-grade fever, fatigue',
-                treatment: 'Prescribed Amoxicillin 500mg, advised rest and hydration.',
-                attachments: ['lab_results.pdf'],
-                doctor: 'Dr. Sarah Johnson',
-                secretary: 'Jessica Pearson'
-            },
-            {
-                id: 102,
-                date: '2023-05-12',
-                diagnosis: 'Seasonal Allergies',
-                symptoms: 'Sneezing, itchy eyes',
-                treatment: 'Cetirizine 10mg daily',
-                attachments: [],
-                doctor: 'Dr. James Wilson',
-                secretary: 'Donna Paulsen'
-            }
-        ]
-    },
-    {
-        id: 2,
-        name: 'Michael Brown',
-        age: 45,
-        gender: 'Male',
-        bloodType: 'O-',
-        contact: '+1 234-567-8902',
-        image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-        history: [
-            {
-                id: 201,
-                date: '2023-10-20',
-                diagnosis: 'Hypertension',
-                symptoms: 'Occasional headaches, dizziness',
-                treatment: 'Lisinopril 10mg, lifestyle modification diet',
-                attachments: ['cardio_scan.jpg'],
-                doctor: 'Dr. Sarah Johnson',
-                secretary: 'Jessica Pearson'
-            }
-        ]
-    },
-    {
-        id: 3,
-        name: 'Sophia Lee',
-        age: 32,
-        gender: 'Female',
-        bloodType: 'B+',
-        contact: '+1 234-567-8903',
-        image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia',
-        history: []
-    },
-    {
-        id: 4,
-        name: 'James Rodriguez',
-        age: 55,
-        gender: 'Male',
-        bloodType: 'AB+',
-        contact: '+1 234-567-8904',
-        image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
-        history: Array.from({ length: 25 }, (_, i) => ({
-            id: 400 + i,
-            date: new Date(2023, 0, 1 + i * 14).toISOString().split('T')[0],
-            diagnosis: i % 3 === 0 ? 'Regular Checkup' : (i % 3 === 1 ? 'Back Pain' : 'Migraine'),
-            symptoms: i % 3 === 0 ? 'Routine monitoring' : (i % 3 === 1 ? 'Lower back stiffness' : 'Severe headache, sensitivity to light'),
-            treatment: i % 3 === 0 ? 'Vitals normal, continue current meds' : (i % 3 === 1 ? 'Physical therapy referral' : 'Sumatriptan 50mg'),
-            attachments: i % 5 === 0 ? [`report_${i}.pdf`] : [],
-            doctor: i % 2 === 0 ? 'Dr. Sarah Johnson' : 'Dr. James Wilson',
-            secretary: i % 2 === 0 ? 'Jessica Pearson' : 'Donna Paulsen'
-        })).reverse()
-    },
-    {
-        id: 5,
-        name: 'Olivia Martinez',
-        age: 22,
-        gender: 'Female',
-        bloodType: 'O+',
-        contact: '+1 234-567-8905',
-        image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Olivia',
-        history: [
-            {
-                id: 501,
-                date: '2023-11-01',
-                diagnosis: 'Influenza A',
-                symptoms: 'High fever, body aches, chills',
-                treatment: 'Oseltamivir 75mg, bed rest',
-                attachments: [],
-                doctor: 'Dr. Sarah Johnson',
-                secretary: 'Jessica Pearson'
-            }
-        ]
-    },
-    {
-        id: 6,
-        name: 'William Taylor',
-        age: 60,
-        gender: 'Male',
-        bloodType: 'A-',
-        contact: '+1 234-567-8906',
-        image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=William',
-        history: []
-    }
-];
-
-const MedicalBackground = ({ theme }) => {
-    return (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-            <style>
-                {`
-                    @keyframes float {
-                        0% { transform: translateY(0px) rotate(0deg); }
-                        50% { transform: translateY(-20px) rotate(var(--rotation)); }
-                        100% { transform: translateY(0px) rotate(0deg); }
-                    }
-                `}
-            </style>
-            {[...Array(25)].map((_, i) => {
-                const Icon = [Plus, Activity, Pill, Stethoscope, FileText][i % 5];
-                const size = Math.random() * 40 + 20;
-                const left = Math.random() * 100;
-                const top = Math.random() * 100;
-                const delay = Math.random() * 5;
-                const duration = Math.random() * 5 + 5; // Faster: 5-10s duration
-                const rotation = (Math.random() * 20 + 10) * (Math.random() > 0.5 ? 1 : -1); // Random direction
-
-                return (
-                    <div
-                        key={i}
-                        className="absolute"
-                        style={{
-                            left: `${left}%`,
-                            top: `${top}%`,
-                            color: theme.primary,
-                            '--rotation': `${rotation}deg`,
-                            animation: `float ${duration}s ease-in-out ${delay}s infinite`
-                        }}
-                    >
-                        <Icon size={size} />
-                    </div>
-                );
-            })}
-        </div>
-    );
-};
 
 export default function PatientRecordsPage() {
     const { isDark } = useOutletContext();
@@ -319,7 +139,7 @@ export default function PatientRecordsPage() {
                 <div
                     className="rounded-lg p-3 flex items-center gap-3 shrink-0 border relative animate-fade-in"
                     style={{
-                        background: `${theme.warning}15`,
+                        background: `${theme.warning}25`,
                         borderColor: `${theme.warning}40`
                     }}
                 >
@@ -342,7 +162,7 @@ export default function PatientRecordsPage() {
                 <div
                     className="rounded-lg p-3 flex items-center gap-3 shrink-0 border relative animate-fade-in"
                     style={{
-                        background: `${theme.accent}15`,
+                        background: `${theme.accent}25`,
                         borderColor: `${theme.accent}40`
                     }}
                 >
@@ -363,7 +183,6 @@ export default function PatientRecordsPage() {
             <div className="flex flex-1 gap-6 overflow-hidden">
                 {/* Sidebar - Patient List */}
                 <div
-                    //TODO: remove animated-border-card
                     className="w-1/3 flex flex-col rounded-xl shadow-lg border-2 overflow-hidden select-none"
                     style={{ background: theme.cardBg, borderColor: theme.primary }}
                     onClick={(e) => {
@@ -418,7 +237,7 @@ export default function PatientRecordsPage() {
                                         <p className="font-semibold text-base" style={{ color: theme.text }}>
                                             <HighlightedText text={patient.name} highlight={searchTerm} />
                                         </p>
-                                        <p className="text-sm font-medium" style={{ color: theme.muted }}>ID: #{patient.id} • {patient.age} yrs</p>
+                                        <p className="text-sm font-bold opacity-80" style={{ color: theme.text }}>ID: #{patient.id} • {patient.age} yrs</p>
                                     </div>
                                     <ChevronRight size={16} className="ml-auto" style={{ color: theme.muted }} />
                                 </div>
@@ -444,13 +263,13 @@ export default function PatientRecordsPage() {
                                     <div className="mb-2">
                                         <h1 className="text-4xl font-black tracking-tight" style={{ color: theme.text }}>{selectedPatient.name}</h1>
                                         <div className="flex flex-wrap gap-3 mt-3 font-medium text-sm">
-                                            <span className="flex items-center gap-1 px-3 py-1 rounded-full" style={{ background: `${theme.primary}15`, color: theme.text }}>
+                                            <span className="flex items-center gap-1 px-3 py-1 rounded-full" style={{ background: `${theme.primary}40`, color: theme.text }}>
                                                 <User size={14} className="text-blue-500" /> {selectedPatient.gender}, {selectedPatient.age} yrs
                                             </span>
-                                            <span className="flex items-center gap-1 px-3 py-1 rounded-full" style={{ background: `${theme.danger}15`, color: theme.text }}>
+                                            <span className="flex items-center gap-1 px-3 py-1 rounded-full" style={{ background: `${theme.danger}25`, color: theme.text }}>
                                                 <Activity size={14} className="text-red-500" /> Blood: {selectedPatient.bloodType}
                                             </span>
-                                            <span className="flex items-center gap-1 px-3 py-1 rounded-full" style={{ background: `${theme.success}15`, color: theme.text }}>
+                                            <span className="flex items-center gap-1 px-3 py-1 rounded-full" style={{ background: `${theme.success}25`, color: theme.text }}>
                                                 <Stethoscope size={14} className="text-green-500" /> {selectedPatient.history.length} Visits
                                             </span>
                                         </div>
@@ -523,11 +342,11 @@ export default function PatientRecordsPage() {
 
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                             <div>
-                                                                <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: theme.muted }}>Symptoms</p>
+                                                                <p className="text-xs font-bold uppercase tracking-wider mb-2 opacity-70" style={{ color: theme.text }}>Symptoms</p>
                                                                 <p className="text-base leading-relaxed" style={{ color: theme.text }}>{record.symptoms}</p>
                                                             </div>
                                                             <div>
-                                                                <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: theme.muted }}>Treatment</p>
+                                                                <p className="text-xs font-bold uppercase tracking-wider mb-2 opacity-70" style={{ color: theme.text }}>Treatment</p>
                                                                 <p className="text-base leading-relaxed" style={{ color: theme.text }}>{record.treatment}</p>
                                                             </div>
                                                         </div>
@@ -560,7 +379,7 @@ export default function PatientRecordsPage() {
                                     ) : (
                                         <div className="text-center py-12 rounded-xl border-2 border-dashed" style={{ borderColor: theme.border }}>
                                             <FileText size={48} className="mx-auto mb-3 opacity-30" style={{ color: theme.text }} />
-                                            <p className="font-medium" style={{ color: theme.muted }}>No medical records found for this patient.</p>
+                                            <p className="font-medium opacity-70" style={{ color: theme.text }}>No medical records found for this patient.</p>
                                             <button
                                                 onClick={() => setIsModalOpen(true)}
                                                 className="mt-4 text-sm font-bold hover:underline"
@@ -579,7 +398,7 @@ export default function PatientRecordsPage() {
                                 <User size={48} className="opacity-50" />
                             </div>
                             <h2 className="text-2xl font-bold mb-2" style={{ color: theme.text }}>Select a Patient</h2>
-                            <p className="max-w-md mx-auto">Choose a patient from the sidebar list to view their full medical history, diagnosis, and treatment records.</p>
+                            <p className="max-w-md mx-auto opacity-80" style={{ color: theme.text }}>Choose a patient from the sidebar list to view their full medical history, diagnosis, and treatment records.</p>
                         </div>
                     )}
                 </div>
@@ -593,7 +412,7 @@ export default function PatientRecordsPage() {
                         <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: theme.border }}>
                             <h3 className="text-xl font-bold" style={{ color: theme.text }}>
                                 {editingRecord ? 'Edit Medical Record' : 'Add Medical Record'}
-                                <span className="block text-sm font-normal mt-1" style={{ color: theme.muted }}>for {selectedPatient?.name}</span>
+                                <span className="block text-sm font-normal mt-1 opacity-70" style={{ color: theme.text }}>for {selectedPatient?.name}</span>
                             </h3>
                             <button onClick={() => { setIsModalOpen(false); setEditingRecord(null); }}
                                 className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -638,7 +457,7 @@ export default function PatientRecordsPage() {
                                         <Paperclip size={24} style={{ color: theme.primary }} />
                                     </div>
                                     <p className="text-sm font-medium" style={{ color: theme.text }}>Click to upload reports or images</p>
-                                    <p className="text-xs mt-1" style={{ color: theme.muted }}>PDF, JPG, PNG up to 10MB</p>
+                                    <p className="text-xs mt-1 opacity-60" style={{ color: theme.text }}>PDF, JPG, PNG up to 10MB</p>
                                 </div>
                             </div>
 
@@ -669,7 +488,7 @@ export default function PatientRecordsPage() {
                                 <AlertTriangle size={32} style={{ color: theme.danger }} />
                             </div>
                             <h3 className="text-xl font-bold mb-2" style={{ color: theme.text }}>Delete Record?</h3>
-                            <p className="text-sm mb-6" style={{ color: theme.muted }}>
+                            <p className="text-sm mb-6 opacity-80" style={{ color: theme.text }}>
                                 Are you sure you want to delete this medical record? This action cannot be undone.
                             </p>
                             <div className="flex gap-3 w-full">
