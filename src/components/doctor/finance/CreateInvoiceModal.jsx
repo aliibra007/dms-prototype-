@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Calendar, User, DollarSign, FileText } from "lucide-react";
+import { X, Calendar, User, DollarSign, FileText, Search } from "lucide-react";
 
 const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
   const [formData, setFormData] = useState({
@@ -18,7 +18,7 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
     { id: 105, name: "Emily Carter" },
   ];
 
-  if (!isOpen) return null;
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,6 +47,21 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
 
   const labelStyle = { color: isDark ? "#94A3B8" : "#4B5563" };
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const filteredPatients = MOCK_PATIENTS.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleSelectPatient = (patient) => {
+    setFormData({ ...formData, patient_id: patient.id });
+    setSearchTerm(patient.name);
+    setIsDropdownOpen(false);
+  };
+
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-xl shadow-2xl p-6 m-4" style={{ background: isDark ? "#0F172A" : "#FFFFFF", border: `1px solid ${isDark ? "#334155" : "#E5E7EB"}` }}>
@@ -60,17 +75,50 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium mb-1" style={labelStyle}>Patient</label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: isDark ? "#94A3B8" : "#9CA3AF" }} />
-              <select required value={formData.patient_id} onChange={(e) => setFormData({ ...formData, patient_id: e.target.value })} className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none" style={inputStyle}>
-                <option value="">Select a patient</option>
-                {MOCK_PATIENTS.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: isDark ? "#94A3B8" : "#9CA3AF" }} />
+              <input
+                type="text"
+                required
+                placeholder="Search patient..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setIsDropdownOpen(true);
+                  setFormData({ ...formData, patient_id: "" }); // Reset ID on change
+                }}
+                onFocus={() => setIsDropdownOpen(true)}
+                className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                style={inputStyle}
+              />
             </div>
+
+            {isDropdownOpen && searchTerm && (
+              <div className="absolute z-10 w-full mt-1 rounded-lg border shadow-lg max-h-48 overflow-y-auto"
+                style={{ background: isDark ? "#1E293B" : "#FFFFFF", borderColor: isDark ? "#334155" : "#E5E7EB" }}>
+                {filteredPatients.length > 0 ? (
+                  filteredPatients.map((p) => (
+                    <div
+                      key={p.id}
+                      onClick={() => handleSelectPatient(p)}
+                      className="px-4 py-2 cursor-pointer hover:bg-opacity-10 transition-colors"
+                      style={{
+                        color: isDark ? "#F1F5F9" : "#1F2937",
+                        background: isDark ? "hover:rgba(255,255,255,0.05)" : "hover:rgba(0,0,0,0.05)"
+                      }}
+                    >
+                      {p.name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-4 py-2 text-sm" style={{ color: isDark ? "#94A3B8" : "#6B7280" }}>
+                    No patients found
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div>
