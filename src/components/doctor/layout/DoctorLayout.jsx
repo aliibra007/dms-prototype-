@@ -16,6 +16,7 @@ import {
   LogOut,
   Pill,
   Heart,
+  Globe,
 } from 'lucide-react';
 import '../styles/index.css';
 import '../styles/App.css';
@@ -224,6 +225,7 @@ function Sidebar({ isOpen, isDark }) {
     { icon: Pill, label: 'Prescription', path: '/doctor/prescription' },
     { icon: DollarSign, label: 'Invoices & Finance', path: '/doctor/invoices' },
     { icon: MessageSquare, label: 'Messaging', path: '/doctor/messaging' },
+    { icon: Globe, label: 'Website Settings', path: '/doctor/website-settings' },
     { icon: Settings, label: 'Profile & Settings', path: '/doctor/profile' },
   ];
   return (
