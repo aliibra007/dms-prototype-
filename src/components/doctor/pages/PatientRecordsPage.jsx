@@ -27,6 +27,24 @@ export default function PatientRecordsPage() {
 
     const selectedPatient = patients.find(p => p.id === selectedPatientId);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                if (isModalOpen) {
+                    setIsModalOpen(false);
+                    setEditingRecord(null);
+                } else if (isDeleteModalOpen) {
+                    setIsDeleteModalOpen(false);
+                } else if (viewingAttachment) {
+                    setViewingAttachment(null);
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isModalOpen, isDeleteModalOpen, viewingAttachment]);
+
     const filteredPatients = patients
         .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
         .sort((a, b) => {
@@ -406,9 +424,10 @@ export default function PatientRecordsPage() {
 
             {/* Add/Edit Record Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="rounded-2xl w-full max-w-2xl shadow-2xl transform transition-all scale-100 border"
-                        style={{ background: theme.cardBg, borderColor: theme.border }}>
+                <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div className="flex min-h-full items-center justify-center p-4">
+                        <div className="rounded-2xl w-full max-w-2xl shadow-2xl transform transition-all scale-100 border relative"
+                            style={{ background: theme.cardBg, borderColor: theme.border }}>
                         <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: theme.border }}>
                             <h3 className="text-xl font-bold" style={{ color: theme.text }}>
                                 {editingRecord ? 'Edit Medical Record' : 'Add Medical Record'}
@@ -476,6 +495,7 @@ export default function PatientRecordsPage() {
                         </form>
                     </div>
                 </div>
+            </div>
             )}
 
             {/* Custom Delete Confirmation Modal */}
