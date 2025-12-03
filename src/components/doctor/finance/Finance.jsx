@@ -1,37 +1,21 @@
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, AlertTriangle, X, Lightbulb } from "lucide-react";
 import { useFinanceData } from "../hooks/useFinanceData";
 import OverviewTab from "./tabs/OverviewTab";
 import InvoicesTab from "./tabs/InvoicesTab";
 import PaymentsTab from "./tabs/PaymentsTab";
 import CreateInvoiceModal from "./CreateInvoiceModal";
-
-const COLORS = {
-  light: {
-    primary: "hsl(262, 52%, 47%)",
-    secondary: "hsl(220, 25%, 95%)",
-    accent: "hsl(199, 89%, 48%)",
-    muted: "hsl(240, 10%, 85%)",
-    background: "#FFFFFF",
-    text: "#1F2937",
-    cardBg: "#FFFFFF",
-  },
-  dark: {
-    primary: "hsl(262, 45%, 65%)",
-    secondary: "hsl(220, 20%, 12%)",
-    accent: "hsl(199, 80%, 55%)",
-    muted: "hsl(240, 8%, 35%)",
-    background: "#0F172A",
-    text: "#F1F5F9",
-    cardBg: "#1E293B",
-  },
-};
+import { COLORS } from "../styles/theme";
 
 const Finance = ({ isDark }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [showMockWarning, setShowMockWarning] = useState(true);
+  const [showTip, setShowTip] = useState(true);
+
+  const theme = isDark ? COLORS.dark : COLORS.light;
 
   const {
     invoices,
@@ -87,14 +71,47 @@ const Finance = ({ isDark }) => {
 
   return (
     <div className="space-y-6">
-      {usingMockData && (
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
-            <p className="text-sm text-yellow-800 dark:text-yellow-300">
-              Using mock data. Backend API is not available. Update <code className="bg-yellow-100 dark:bg-yellow-900/40 px-1 rounded">VITE_API_BASE_URL</code> in your .env file to connect to your backend.
-            </p>
-          </div>
+      {usingMockData && showMockWarning && (
+        <div
+          className="rounded-lg p-3 flex items-center gap-3 shrink-0 border relative animate-fade-in"
+          style={{
+            background: `${theme.warning}25`,
+            borderColor: `${theme.warning}40`
+          }}
+        >
+          <AlertTriangle size={20} style={{ color: theme.warning }} />
+          <p className="text-sm font-medium flex-1" style={{ color: theme.text }}>
+            <span className="font-bold">Demo Mode:</span> Using mock data. Backend API is not available. Update <code className="px-1 rounded" style={{ background: `${theme.warning}40` }}>VITE_API_BASE_URL</code> in your .env file.
+          </p>
+          <button
+            onClick={() => setShowMockWarning(false)}
+            className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            style={{ color: theme.muted }}
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
+      {showTip && (
+        <div
+          className="rounded-lg p-3 flex items-center gap-3 shrink-0 border relative animate-fade-in"
+          style={{
+            background: `${theme.accent}25`,
+            borderColor: `${theme.accent}40`
+          }}
+        >
+          <Lightbulb size={20} style={{ color: theme.accent }} />
+          <p className="text-sm font-medium flex-1" style={{ color: theme.text }}>
+            <span className="font-bold">Pro Tip:</span> You can filter invoices by status or search for specific patients to quickly find what you need.
+          </p>
+          <button
+            onClick={() => setShowTip(false)}
+            className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            style={{ color: theme.muted }}
+          >
+            <X size={16} />
+          </button>
         </div>
       )}
 
@@ -170,19 +187,17 @@ const Finance = ({ isDark }) => {
 const TabButton = ({ tab, activeTab, setActiveTab, isDark, colors }) => (
   <button
     onClick={() => setActiveTab(tab.id)}
-    className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-      activeTab === tab.id
+    className={`px-4 py-2 rounded-lg font-semibold transition-all ${activeTab === tab.id
         ? "text-white"
         : isDark
-        ? "text-gray-400 hover:text-white"
-        : "text-gray-600 hover:text-gray-900"
-    }`}
+          ? "text-gray-400 hover:text-white"
+          : "text-gray-600 hover:text-gray-900"
+      }`}
     style={{
       background:
         activeTab === tab.id
-          ? `linear-gradient(135deg, ${
-              isDark ? colors.dark.primary : colors.light.primary
-            }, ${isDark ? colors.dark.accent : colors.light.accent})`
+          ? `linear-gradient(135deg, ${isDark ? colors.dark.primary : colors.light.primary
+          }, ${isDark ? colors.dark.accent : colors.light.accent})`
           : "transparent",
     }}
   >
@@ -195,9 +210,8 @@ const CreateInvoiceButton = ({ isDark, colors, onClick }) => (
     onClick={onClick}
     className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105"
     style={{
-      background: `linear-gradient(135deg, ${
-        isDark ? colors.dark.primary : colors.light.primary
-      }, ${isDark ? colors.dark.accent : colors.light.accent})`,
+      background: `linear-gradient(135deg, ${isDark ? colors.dark.primary : colors.light.primary
+        }, ${isDark ? colors.dark.accent : colors.light.accent})`,
     }}
   >
     <Plus size={20} />
