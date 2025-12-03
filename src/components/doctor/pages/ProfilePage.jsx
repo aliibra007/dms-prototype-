@@ -8,7 +8,7 @@ export default function ProfilePage() {
   const [profileData, setProfileData] = useState({
     fullName: 'Dr. Sarah Johnson',
     email: 'sarah.johnson@medicare.com',
-    phone: '70 123 456', // Only store digits after +961
+    phone: '+961 70 123 456',
     password: '',
     confirmPassword: '',
   })
@@ -48,11 +48,11 @@ export default function ProfilePage() {
     setProfileData(prev => ({ ...prev, [field]: value }))
   }
 
-  // Handle phone number input (only allow digits and spaces after +961)
+  // Handle phone number input (allow digits, spaces, and +)
   const handlePhoneChange = (e) => {
     const value = e.target.value
-    // Only allow numbers and spaces
-    const cleaned = value.replace(/[^0-9\s]/g, '')
+    // Only allow numbers, spaces, and +
+    const cleaned = value.replace(/[^0-9\s+]/g, '')
     setProfileData(prev => ({ ...prev, phone: cleaned }))
   }
 
@@ -205,27 +205,18 @@ export default function ProfilePage() {
                 Phone Number
               </label>
               <div className="relative">
-                {/* Fixed Prefix */}
-                <div
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 font-semibold pointer-events-none select-none"
-                  style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}
-                >
-                  +961
-                </div>
                 {/* Phone Input */}
                 <input
                   type="tel"
                   value={profileData.phone}
                   onChange={handlePhoneChange}
-                  className="w-full border rounded-lg py-2.5 outline-none transition-all focus:ring-2"
+                  className="w-full border rounded-lg px-4 py-2.5 outline-none transition-all focus:ring-2"
                   style={{
-                    paddingLeft: '4.5rem', // Space for +961 prefix
-                    paddingRight: '1rem',
                     background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
                     borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted,
                     color: isDark ? COLORS.dark.text : COLORS.light.text,
                   }}
-                  placeholder="70 123 456"
+                  placeholder="+961 70 123 456"
                 />
               </div>
             </div>
