@@ -16,6 +16,7 @@ import FinancePage from './components/doctor/pages/FinancePage'
 import PlaceholderPage from './components/doctor/pages/PlaceholderPage'
 import WebsiteSettings from './components/doctor/pages/WebsiteSettings'
 import ProfilePage from './components/doctor/pages/ProfilePage'
+import MessagingPage from './components/doctor/pages/MessagingPage'
 
 import PatientRecordsPage from './components/doctor/pages/PatientRecordsPage'
 import PrescriptionsPage from './components/doctor/pages/PrescriptionsPage'
@@ -49,7 +50,7 @@ function App() {
           <Route path="patients" element={<PatientRecordsPage />} />
           <Route path="prescription" element={<PrescriptionsPage />} />
           <Route path="invoices" element={<FinancePage />} />
-          <Route path="messaging" element={<PlaceholderPage title="Messaging" />} />
+          <Route path="messaging" element={<MessagingPage />} />
           <Route path="website-settings" element={<WebsiteSettings />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="*" element={<PlaceholderPage title="Coming Soon" />} />
