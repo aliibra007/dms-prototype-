@@ -9,7 +9,6 @@ import {
   Settings,
   Menu,
   Bell,
-  Search as SearchIcon,
   ChevronDown,
   User,
   Lock,
@@ -21,27 +20,20 @@ import {
 import '../styles/index.css';
 import '../styles/App.css';
 import '../styles/doctor.css';
+import { COLORS } from '../styles/theme';
 
-const COLORS = {
-  light: {
-    primary: 'hsl(262, 52%, 47%)',
-    secondary: 'hsl(220, 25%, 95%)',
-    accent: 'hsl(199, 89%, 48%)',
-    muted: 'hsl(240, 10%, 85%)',
-    background: '#FFFFFF',
-    text: '#1F2937',
-    cardBg: '#FFFFFF',
-  },
-  dark: {
-    primary: 'hsl(262, 45%, 65%)',
-    secondary: 'hsl(220, 20%, 12%)',
-    accent: 'hsl(199, 80%, 55%)',
-    muted: 'hsl(240, 8%, 35%)',
-    background: '#0F172A',
-    text: '#F1F5F9',
-    cardBg: '#1E293B',
-  },
-};
+// Helper function to convert HEX to RGBA with opacity
+function hexToRgba(hex, opacity = 1) {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Parse RGB values
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
 
 function AnimatedBackground({ isDark }) {
   const particles = useMemo(
@@ -63,8 +55,8 @@ function AnimatedBackground({ isDark }) {
           className="grid-animation"
           style={{
             backgroundImage: `
-              linear-gradient(${isDark ? COLORS.dark.muted : COLORS.light.muted}50 1px, transparent 1px),
-              linear-gradient(90deg, ${isDark ? COLORS.dark.muted : COLORS.light.muted}50 1px, transparent 1px)
+              linear-gradient(${hexToRgba(isDark ? COLORS.dark.muted : COLORS.light.muted, 0.5)} 1px, transparent 1px),
+              linear-gradient(90deg, ${hexToRgba(isDark ? COLORS.dark.muted : COLORS.light.muted, 0.5)} 1px, transparent 1px)
             `,
           }}
         />
@@ -84,23 +76,28 @@ function AnimatedBackground({ isDark }) {
         />
       ))}
 
-      <div className="wave-container">
+      <div className="wave-container" style={{ 
+        opacity: 0.06, 
+        height: '120px',
+        maskImage: 'linear-gradient(to top, black 0%, black 60%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to top, black 0%, black 60%, transparent 100%)'
+      }}>
         <div
           className="wave wave1"
           style={{
-            background: `linear-gradient(90deg, transparent, ${isDark ? COLORS.dark.primary : COLORS.light.primary}20, transparent)`,
+            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.2)} 50%, transparent 100%)`,
           }}
         />
         <div
           className="wave wave2"
           style={{
-            background: `linear-gradient(90deg, transparent, ${isDark ? COLORS.dark.primary : COLORS.light.primary}20, transparent)`,
+            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.15)} 50%, transparent 100%)`,
           }}
         />
         <div
           className="wave wave3"
           style={{
-            background: `linear-gradient(90deg, transparent, ${isDark ? COLORS.dark.primary : COLORS.light.primary}20, transparent)`,
+            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.1)} 50%, transparent 100%)`,
           }}
         />
       </div>
@@ -113,7 +110,7 @@ function AnimatedBackground({ isDark }) {
       <div className="geometric-shape square" style={{ border: `3px solid ${isDark ? COLORS.dark.primary : COLORS.light.primary}` }} />
       <div className="geometric-shape triangle" style={{ borderBottom: `86px solid ${isDark ? COLORS.dark.accent : COLORS.light.accent}` }} />
 
-      <div className="radial-pulse" style={{ background: `radial-gradient(circle, ${isDark ? COLORS.dark.primary : COLORS.light.primary}20, transparent)` }} />
+      <div className="radial-pulse" style={{ background: `radial-gradient(circle, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.2)}, transparent)` }} />
     </div>
   );
 }
@@ -121,7 +118,7 @@ function AnimatedBackground({ isDark }) {
 function Navbar({ toggleSidebar, isDark, toggleTheme }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const [notifications] = useState([
+  const [notifications, setNotifications] = useState([
     { id: 1, text: 'New appointment scheduled', time: '5 min ago', unread: true },
     { id: 2, text: 'Patient record updated', time: '1 hour ago', unread: true },
     { id: 3, text: 'Payment received', time: '2 hours ago', unread: false },
@@ -134,6 +131,12 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
 
   useEffect(() => {}, []);
   const unreadCount = notifications.filter((n) => n.unread).length;
+
+  const handleToggleTheme = () => {
+    toggleTheme();
+    // Mark all notifications as read when toggling theme
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 h-16 shadow-lg backdrop-blur-sm z-40 border-b"
@@ -153,18 +156,12 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
             </div>
             <div className="hidden md:block">
               <h1 className="text-lg font-bold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>MediCare</h1>
-              <p className="text-xs" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>Clinic Management</p>
+              <p className="text-xs" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Clinic Management</p>
             </div>
           </div>
         </div>
-        <div className="hidden lg:flex flex-1 max-w-md mx-4">
-          <div className="relative w-full">
-            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2" size={20} style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-            <input type="text" placeholder="Search patients, appointments..." className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none transition-all" style={{ background: isDark ? COLORS.dark.secondary : COLORS.light.secondary, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, color: isDark ? COLORS.dark.text : COLORS.light.text }} />
-          </div>
-        </div>
         <div className="flex items-center gap-4">
-          <button onClick={toggleTheme} className="p-2 rounded-lg transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`, color: isDark ? COLORS.dark.primary : COLORS.light.primary }}>{isDark ? '☀️' : '🌙'}</button>
+          <button onClick={handleToggleTheme} className="p-2 rounded-lg transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`, color: isDark ? COLORS.dark.primary : COLORS.light.primary }}>{isDark ? '☀️' : '🌙'}</button>
           <div className="relative">
             <button onClick={() => setShowNotifications((p) => !p)} className="p-2 rounded-lg relative transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.accent : COLORS.light.accent}20`, color: isDark ? COLORS.dark.accent : COLORS.light.accent }}>
               <Bell size={20} />
@@ -185,13 +182,13 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
             )}
           </div>
           <div className="relative">
-            <button onClick={() => setShowProfile((p) => !p)} className="flex items-center gap-2 p-2 rounded-lg transition-all hover:scale-105" style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}10` }}>
+            <button onClick={() => setShowProfile((p) => !p)} className="flex items-center gap-2 p-2 rounded-lg transition-all hover:scale-105" style={{ background: isDark ? `${COLORS.dark.primary}20` : `${COLORS.light.primary}15` }}>
               <img src={userProfile.avatar} alt="Profile" className="w-8 h-8 rounded-full" />
               <div className="hidden md:block text-left">
                 <p className="text-sm font-semibold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{userProfile.name}</p>
-                <p className="text-xs" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>{userProfile.role}</p>
+                <p className="text-xs" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{userProfile.role}</p>
               </div>
-              <ChevronDown size={16} style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
+              <ChevronDown size={16} style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }} />
             </button>
             {showProfile && (
               <div className="absolute right-0 mt-2 w-56 rounded-lg shadow-2xl border overflow-hidden animate-fade-in" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
@@ -268,7 +265,10 @@ export default function DoctorLayout() {
       <AnimatedBackground isDark={isDark} />
       <Navbar toggleSidebar={() => setIsSidebarOpen((p) => !p)} isDark={isDark} toggleTheme={() => setIsDark((p) => !p)} />
       <Sidebar isOpen={isSidebarOpen} isDark={isDark} />
-      <main className="pt-20 px-4 lg:px-8 pb-10 relative z-10 transition-all duration-300" style={{ paddingLeft: isSidebarOpen ? 'calc(260px + 2rem)' : '1rem' }}>
+      <main className="pt-20 px-4 lg:px-8 pb-10 relative z-10 transition-all duration-300" style={{ 
+        paddingLeft: isSidebarOpen ? 'calc(260px + 2rem)' : '1rem',
+        background: isDark ? COLORS.dark.background : COLORS.light.secondary
+      }}>
         <Outlet context={{ isDark }} />
       </main>
     </div>

@@ -18,6 +18,7 @@ export const COLORS = {
         muted: '#475569',
         text: '#F1F5F9',
         cardBg: '#1E293B',
+        background: '#0F172A',
         success: '#34D399',
         warning: '#FBBF24',
         danger: '#F87171',

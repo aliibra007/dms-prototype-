@@ -11,7 +11,7 @@ const StatCard = ({ icon: Icon, title, value, change, color, isDark }) => (
                 {change >= 0 ? '+' : ''}{change}%
             </span>
         </div>
-        <h3 className="text-sm mb-1" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>{title}</h3>
+        <h3 className="text-sm mb-1" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{title}</h3>
         <p className="text-2xl font-bold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{value}</p>
     </div>
 );

@@ -1,6 +1,16 @@
 import React from 'react';
 import { Search, ChevronRight } from 'lucide-react';
 
+const scrollbarHideStyle = `
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`;
+
 export default function PatientListSidebar({
   patients,
   selectedPatientId,
@@ -44,15 +54,17 @@ export default function PatientListSidebar({
   };
 
   return (
-    <div
-      className="w-1/3 flex flex-col rounded-xl shadow-lg border-2 overflow-hidden select-none"
-      style={{ background: theme.cardBg, borderColor: theme.primary }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          setSelectedPatientId(null);
-        }
-      }}
-    >
+    <>
+      <style>{scrollbarHideStyle}</style>
+      <div
+        className="w-1/3 flex flex-col rounded-xl shadow-lg border-2 overflow-hidden select-none"
+        style={{ background: theme.cardBg, borderColor: theme.primary }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setSelectedPatientId(null);
+          }
+        }}
+      >
       <div className="p-4 border-b" style={{ borderColor: theme.border }}>
         <h2 className="text-lg font-bold mb-4" style={{ color: theme.text }}>Patients</h2>
         <div className="relative">
@@ -72,7 +84,13 @@ export default function PatientListSidebar({
           />
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div 
+        className="flex-1 overflow-y-auto scrollbar-hide"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
         {filteredPatients.map((patient, idx) => {
           const cardColors = [theme.success, theme.warning, theme.danger, theme.primary];
           const borderColor = cardColors[idx % cardColors.length];
@@ -107,5 +125,6 @@ export default function PatientListSidebar({
         })}
       </div>
     </div>
+    </>
   );
 }
