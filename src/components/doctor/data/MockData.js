@@ -119,6 +119,81 @@ export const MOCK_PATIENTS = [
     { id: 105, name: "Emily Carter", age: 28, gender: 'Female', bloodType: 'A+', contact: '+1 234-567-8904', image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily', history: [] }, // Duplicate name but different ID in finance data, keeping for consistency with finance mock data
 ];
 
+export const MOCK_MEDICINES = [
+    { id: 1, name: 'Amoxicillin', dosage: '500mg', frequency: 'Twice daily', duration: '7 days', type: 'Antibiotic' },
+    { id: 2, name: 'Paracetamol', dosage: '500mg', frequency: 'Every 6 hours', duration: '3 days', type: 'Painkiller' },
+    { id: 3, name: 'Ibuprofen', dosage: '400mg', frequency: 'Three times daily', duration: '5 days', type: 'Anti-inflammatory' },
+    { id: 4, name: 'Cetirizine', dosage: '10mg', frequency: 'Once daily', duration: '7 days', type: 'Antihistamine' },
+    { id: 5, name: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', duration: '30 days', type: 'Blood Pressure' },
+    { id: 6, name: 'Metformin', dosage: '500mg', frequency: 'Twice daily', duration: '30 days', type: 'Diabetes' },
+    { id: 7, name: 'Omeprazole', dosage: '20mg', frequency: 'Once daily', duration: '14 days', type: 'Antacid' },
+    { id: 8, name: 'Azithromycin', dosage: '250mg', frequency: 'Once daily', duration: '5 days', type: 'Antibiotic' },
+    { id: 9, name: 'Atorvastatin', dosage: '20mg', frequency: 'Once daily', duration: '30 days', type: 'Cholesterol' },
+    { id: 10, name: 'Levothyroxine', dosage: '50mcg', frequency: 'Once daily', duration: '30 days', type: 'Thyroid' },
+    { id: 11, name: 'Amlodipine', dosage: '5mg', frequency: 'Once daily', duration: '30 days', type: 'Blood Pressure' },
+    { id: 12, name: 'Metronidazole', dosage: '400mg', frequency: 'Three times daily', duration: '7 days', type: 'Antibiotic' },
+    { id: 13, name: 'Doxycycline', dosage: '100mg', frequency: 'Twice daily', duration: '10 days', type: 'Antibiotic' },
+    { id: 14, name: 'Ciprofloxacin', dosage: '500mg', frequency: 'Twice daily', duration: '7 days', type: 'Antibiotic' },
+    { id: 15, name: 'Prednisolone', dosage: '5mg', frequency: 'Once daily', duration: '5 days', type: 'Steroid' },
+];
+
+export const MOCK_PRESCRIPTIONS = [
+    {
+        id: 1,
+        patientId: 1,
+        patientName: 'Emily Carter',
+        date: '2023-10-25',
+        medicines: [
+            { id: 1, name: 'Amoxicillin', dosage: '500mg', frequency: 'Twice daily', duration: '7 days', instructions: 'Take with food' },
+            { id: 4, name: 'Cetirizine', dosage: '10mg', frequency: 'Once daily', duration: '7 days', instructions: 'Take at bedtime' }
+        ],
+        diagnosis: 'Acute Bronchitis',
+        notes: 'Complete the full course of antibiotics. Rest and stay hydrated.',
+        doctor: 'Dr. Sarah Johnson',
+        status: 'sent'
+    },
+    {
+        id: 2,
+        patientId: 2,
+        patientName: 'Michael Brown',
+        date: '2023-10-20',
+        medicines: [
+            { id: 5, name: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', duration: '30 days', instructions: 'Monitor blood pressure regularly' }
+        ],
+        diagnosis: 'Hypertension',
+        notes: 'Follow up in 2 weeks. Maintain low-sodium diet.',
+        doctor: 'Dr. Sarah Johnson',
+        status: 'sent'
+    },
+    {
+        id: 3,
+        patientId: 1,
+        patientName: 'Emily Carter',
+        date: '2023-05-12',
+        medicines: [
+            { id: 4, name: 'Cetirizine', dosage: '10mg', frequency: 'Once daily', duration: '7 days', instructions: 'Take as needed for allergies' }
+        ],
+        diagnosis: 'Seasonal Allergies',
+        notes: 'Avoid allergens when possible.',
+        doctor: 'Dr. James Wilson',
+        status: 'sent'
+    },
+    {
+        id: 4,
+        patientId: 5,
+        patientName: 'Olivia Martinez',
+        date: '2023-11-01',
+        medicines: [
+            { id: 8, name: 'Azithromycin', dosage: '250mg', frequency: 'Once daily', duration: '5 days', instructions: 'Take on empty stomach' },
+            { id: 2, name: 'Paracetamol', dosage: '500mg', frequency: 'Every 6 hours', duration: '3 days', instructions: 'For fever and body aches' }
+        ],
+        diagnosis: 'Influenza A',
+        notes: 'Rest and stay hydrated. Return if symptoms worsen.',
+        doctor: 'Dr. Sarah Johnson',
+        status: 'sent'
+    },
+];
+
 export const MOCK_INVOICES = [
     { invoice_id: 1, appointment_id: 1, patient_id: 101, doctor_id: 1, amount: 250.0, due_date: '2025-11-29', status: 'paid', paid_at: '2025-11-15T10:00:00Z', payment_method: 'Credit Card', created_at: '2025-11-15T10:00:00Z', patient_name: 'John Doe', patient_phone: '+1 234-567-8900', patient_email: 'john.doe@email.com', appointment_date: '2025-11-15T09:00:00Z', appointment_notes: 'Consultation & Follow-up' },
     { invoice_id: 2, appointment_id: 2, patient_id: 102, doctor_id: 1, amount: 450.0, due_date: '2025-12-04', status: 'pending', paid_at: null, payment_method: 'Insurance', created_at: '2025-11-20T10:00:00Z', patient_name: 'Jane Smith', patient_phone: '+1 234-567-8901', patient_email: 'jane.smith@email.com', appointment_date: '2025-11-20T09:30:00Z', appointment_notes: 'Lab Tests & Consultation' },
