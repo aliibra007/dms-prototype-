@@ -20,6 +20,13 @@ import MessagingPage from './components/doctor/pages/MessagingPage'
 
 import PatientRecordsPage from './components/doctor/pages/PatientRecordsPage'
 import PrescriptionsPage from './components/doctor/pages/PrescriptionsPage'
+import SecretaryLayout from './components/secretary/layout/SecretaryLayout'
+import SecretaryDashboardPage from './components/secretary/pages/DashboardPage'
+import SecretaryPatientsPage from './components/secretary/pages/PatientsPage'
+import SecretaryFinancePage from './components/secretary/pages/FinancePage'
+import SecretaryMessagingPage from './components/secretary/pages/MessagingPage'
+import SecretarySchedulePage from './components/secretary/pages/SchedulePage'
+import SecretaryProfilePage from './components/secretary/pages/ProfilePage'
 
 function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
@@ -54,6 +61,14 @@ function App() {
           <Route path="website-settings" element={<WebsiteSettings />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="*" element={<PlaceholderPage title="Coming Soon" />} />
+        </Route>
+        <Route path="/secretary/*" element={<SecretaryLayout />}>
+          <Route index element={<SecretaryDashboardPage />} />
+          <Route path="schedule" element={<SecretarySchedulePage />} />
+          <Route path="patients" element={<SecretaryPatientsPage />} />
+          <Route path="invoices" element={<SecretaryFinancePage />} />
+          <Route path="messaging" element={<SecretaryMessagingPage />} />
+          <Route path="profile" element={<SecretaryProfilePage />} />
         </Route>
       </Routes>
     </ThemeProvider>
