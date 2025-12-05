@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -16,6 +16,8 @@ import {
   Pill,
   Heart,
   Globe,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import '../styles/index.css';
 import '../styles/App.css';
@@ -161,7 +163,9 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={handleToggleTheme} className="p-2 rounded-lg transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`, color: isDark ? COLORS.dark.primary : COLORS.light.primary }}>{isDark ? '☀️' : '🌙'}</button>
+          <button onClick={handleToggleTheme} className="p-2 rounded-lg transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`, color: isDark ? COLORS.dark.primary : COLORS.light.primary }}>
+            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
           <div className="relative">
             <button onClick={() => setShowNotifications((p) => !p)} className="p-2 rounded-lg relative transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.accent : COLORS.light.accent}20`, color: isDark ? COLORS.dark.accent : COLORS.light.accent }}>
               <Bell size={20} />
@@ -213,7 +217,7 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
   );
 }
 
-function Sidebar({ isOpen, isDark }) {
+function Sidebar({ isOpen, isDark, onClose }) {
   const location = useLocation();
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/doctor' },
@@ -226,47 +230,101 @@ function Sidebar({ isOpen, isDark }) {
     { icon: Settings, label: 'Profile & Settings', path: '/doctor/profile' },
   ];
   return (
-    <aside className={`fixed top-16 left-0 h-[calc(100vh-4rem)] transition-all duration-300 z-30 border-r shadow-lg ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
-      style={{ width: '260px', background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}
-    >
-      <div className="h-full overflow-y-auto p-4">
-        <nav className="space-y-2">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.path;
-            return (
-              <Link key={item.path} to={item.path} className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group"
-                style={{
-                  background: isActive ? `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})` : 'transparent',
-                  color: isActive ? '#FFFFFF' : (isDark ? COLORS.dark.text : COLORS.light.text),
-                }}
-              >
-                <Icon size={20} className={isActive ? '' : 'group-hover:scale-110 transition-transform'} />
-                <span className="text-sm font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
-    </aside>
+    <>
+      {/* Backdrop overlay for mobile */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-20 md:hidden transition-opacity duration-300"
+          onClick={onClose}
+          style={{ top: '4rem' }}
+        />
+      )}
+      <aside className={`fixed top-16 left-0 h-[calc(100vh-4rem)] transition-all duration-300 z-30 border-r shadow-lg ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ width: '260px', background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}
+      >
+        <div className="h-full overflow-y-auto p-4">
+          <nav className="space-y-2">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <Link 
+                  key={item.path} 
+                  to={item.path} 
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group"
+                  onClick={() => {
+                    // Close sidebar on mobile when a link is clicked
+                    if (window.innerWidth < 768) {
+                      onClose();
+                    }
+                  }}
+                  style={{
+                    background: isActive ? `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})` : 'transparent',
+                    color: isActive ? '#FFFFFF' : (isDark ? COLORS.dark.text : COLORS.light.text),
+                  }}
+                >
+                  <Icon size={20} className={isActive ? '' : 'group-hover:scale-110 transition-transform'} />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      </aside>
+    </>
   );
 }
 
 export default function DoctorLayout() {
   const [isDark, setIsDark] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const prevMobileRef = useRef(window.innerWidth < 768);
 
   useEffect(() => {
     document.documentElement.style.background = isDark ? COLORS.dark.background : COLORS.light.secondary;
   }, [isDark]);
 
+  // Track mobile state and handle sidebar on resize
+  useEffect(() => {
+    const checkMobile = () => {
+      const nowMobile = window.innerWidth < 768;
+      const wasMobile = prevMobileRef.current;
+      
+      // Only auto-open sidebar when transitioning from mobile to desktop
+      if (wasMobile && !nowMobile) {
+        setIsSidebarOpen(true);
+      }
+      
+      prevMobileRef.current = nowMobile;
+      setIsMobile(nowMobile);
+    };
+    
+    // Set initial mobile state
+    const initialMobile = window.innerWidth < 768;
+    prevMobileRef.current = initialMobile;
+    setIsMobile(initialMobile);
+    
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((p) => !p);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="min-h-screen" style={{ background: isDark ? COLORS.dark.background : COLORS.light.secondary, color: isDark ? COLORS.dark.text : COLORS.light.text }}>
       <AnimatedBackground isDark={isDark} />
-      <Navbar toggleSidebar={() => setIsSidebarOpen((p) => !p)} isDark={isDark} toggleTheme={() => setIsDark((p) => !p)} />
-      <Sidebar isOpen={isSidebarOpen} isDark={isDark} />
+      <Navbar toggleSidebar={toggleSidebar} isDark={isDark} toggleTheme={() => setIsDark((p) => !p)} />
+      <Sidebar isOpen={isSidebarOpen} isDark={isDark} onClose={closeSidebar} />
       <main className="pt-20 px-4 lg:px-8 pb-10 relative z-10 transition-all duration-300" style={{ 
-        paddingLeft: isSidebarOpen ? 'calc(260px + 2rem)' : '1rem',
+        // Only apply padding on desktop (md and above), not on mobile
+        paddingLeft: isMobile ? '1rem' : (isSidebarOpen ? 'calc(260px + 2rem)' : '1rem'),
         background: isDark ? COLORS.dark.background : COLORS.light.secondary
       }}>
         <Outlet context={{ isDark }} />
