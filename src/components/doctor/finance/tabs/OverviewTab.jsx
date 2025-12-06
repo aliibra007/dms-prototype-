@@ -18,6 +18,7 @@ import {
   Legend,
 } from "recharts";
 import StatCard from "../StatCard";
+import { COLORS } from "../../styles/theme";
 
 const OverviewTab = ({
   isDark,
@@ -75,7 +76,7 @@ const OverviewTab = ({
           className="rounded-xl p-6 border-2"
           style={{
             background: isDark ? "#1E293B" : "#FFFFFF",
-            borderColor: isDark ? "#6366F1" : "#8B5CF6",
+            borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary,
           }}
         >
           <div className="flex items-center justify-between mb-4">
@@ -116,7 +117,7 @@ const OverviewTab = ({
           className="rounded-xl p-6 border-2"
           style={{
             background: isDark ? "#1E293B" : "#FFFFFF",
-            borderColor: isDark ? "#0EA5E9" : "#0369A1",
+            borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary,
           }}
         >
           <h3 className="text-lg font-bold mb-4" style={{ color: isDark ? "#F1F5F9" : "#1F2937" }}>

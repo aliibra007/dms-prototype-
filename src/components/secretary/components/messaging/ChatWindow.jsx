@@ -97,8 +97,8 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
           <div ref={optionsRef} className="relative">
             <button 
               onClick={() => setShowOptions(!showOptions)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" 
-              style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}
+              className="p-2 rounded-full transition-colors hover:bg-opacity-10" 
+              style={{ color: isDark ? COLORS.dark.text : COLORS.light.text, backgroundColor: `${isDark ? COLORS.dark.muted : COLORS.light.muted}20` }}
             >
               <MoreVertical size={20} />
             </button>
@@ -136,8 +136,9 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4"
-        style={{ background: isDark ? COLORS.dark.background : COLORS.light.secondary }}
+      {/* TRANSPARENCY: Change opacity values to adjust messages area (00=fully transparent, ff=fully opaque) */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 backdrop-blur-sm"
+        style={{ background: isDark ? `${COLORS.dark.background}33` : `${COLORS.light.secondary}22` }}
       >
         {messages.map((msg) => (
           <MessageBubble

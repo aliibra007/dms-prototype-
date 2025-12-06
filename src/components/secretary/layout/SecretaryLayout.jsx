@@ -29,8 +29,8 @@ function AnimatedBackground({ isDark }) {
       id: i,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
-      size: Math.random() * 3 + 2, // 2-5px
-      opacity: Math.random() * 0.4 + 0.5, // 0.5-0.9 (increased for better contrast)
+      size: Math.random() * 4 + 3, // 3-7px (increased for better visibility)
+      opacity: Math.random() * 0.3 + 0.6, // 0.6-0.9 (increased for better visibility)
       duration: Math.random() * 20 + 15, // 15-35s
       delay: Math.random() * 5, // 0-5s
     }));
@@ -306,7 +306,7 @@ export default function SecretaryLayout() {
       <Sidebar isOpen={isSidebarOpen} isDark={isDark} onClose={closeSidebar} />
       <main className="pt-20 px-4 lg:px-8 pb-10 relative z-10 transition-all duration-300" style={{ 
         paddingLeft: isMobile ? '1rem' : (isSidebarOpen ? 'calc(260px + 2rem)' : '1rem'),
-        background: isDark ? COLORS.dark.background : COLORS.light.secondary
+        background: 'transparent'
       }}>
         <Outlet context={{ isDark }} />
       </main>

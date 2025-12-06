@@ -14,6 +14,7 @@ const MOCK_CONTACTS = [
     lastMessage: 'Can you review the patient file?',
     lastMessageTime: '10:30 AM',
     online: true,
+    phone: '+1234567890',
   },
   {
     id: 2,
@@ -23,6 +24,7 @@ const MOCK_CONTACTS = [
     lastMessage: 'Appointment rescheduled to 2 PM',
     lastMessageTime: 'Yesterday',
     online: true,
+    phone: '+1234567891',
   },
   {
     id: 3,
@@ -32,6 +34,7 @@ const MOCK_CONTACTS = [
     lastMessage: 'Thank you doctor!',
     lastMessageTime: '2 days ago',
     online: false,
+    phone: '+1234567892',
   },
   {
     id: 4,
@@ -41,6 +44,7 @@ const MOCK_CONTACTS = [
     lastMessage: 'See you at the conference',
     lastMessageTime: '1 week ago',
     online: false,
+    phone: '+1234567893',
   },
 ];
 
@@ -85,12 +89,14 @@ export default function MessagingPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] rounded-xl shadow-lg border overflow-hidden flex"
-      style={{
-        background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg,
-        borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted,
-      }}
-    >
+    <>
+      {/* TRANSPARENCY: Change opacity values to adjust main container (00=fully transparent, ff=fully opaque) */}
+      <div className="h-[calc(100vh-8rem)] rounded-xl shadow-lg border-2 overflow-hidden flex backdrop-blur-sm"
+        style={{
+          background: isDark ? `${COLORS.dark.cardBg}66` : `${COLORS.light.cardBg}33`,
+          borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary,
+        }}
+      >
       {/* Sidebar - Hidden on mobile when chat is open */}
       <div className={`w-full md:w-80 flex-shrink-0 ${selectedContact ? 'hidden md:block' : 'block'}`}>
         <ContactList
@@ -122,5 +128,6 @@ export default function MessagingPage() {
         />
       </div>
     </div>
+    </>
   );
 }

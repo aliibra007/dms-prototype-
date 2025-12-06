@@ -80,11 +80,11 @@ export default function DashboardPage() {
               <XAxis dataKey="name" stroke={isDark ? COLORS.dark.text : COLORS.light.text} />
               <YAxis stroke={isDark ? COLORS.dark.text : COLORS.light.text} />
               <Tooltip contentStyle={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-              <Line type="monotone" dataKey="patients" stroke={COLORS.light.accent} strokeWidth={3} dot={false} />
+              <Line type="monotone" dataKey="patients" stroke={isDark ? COLORS.dark.primary : COLORS.light.primary} strokeWidth={3} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="rounded-xl p-6 shadow-lg border-2" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: '#F59E0B' }}>
+        <div className="rounded-xl p-6 shadow-lg border-2" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary }}>
           <h3 className="text-lg font-bold mb-4" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Revenue Overview</h3>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={dashboardData.revenueData}>
@@ -92,20 +92,20 @@ export default function DashboardPage() {
               <XAxis dataKey="month" stroke={isDark ? COLORS.dark.text : COLORS.light.text} />
               <YAxis stroke={isDark ? COLORS.dark.text : COLORS.light.text} />
               <Tooltip contentStyle={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-              <Bar dataKey="total" fill="#F59E0B" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="total" fill={isDark ? COLORS.dark.primary : COLORS.light.primary} radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-xl p-6 shadow-lg border-2" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.accent : COLORS.light.accent }}>
+        <div className="rounded-xl p-6 shadow-lg border-2" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Recent Activity</h3>
             <button
               onClick={() => setIsActivityModalOpen(true)}
               className="text-sm font-semibold transition-all hover:scale-105"
-              style={{ color: isDark ? COLORS.dark.accent : COLORS.light.accent }}
+              style={{ color: isDark ? COLORS.dark.primary : COLORS.light.primary }}
             >
               View All
             </button>
