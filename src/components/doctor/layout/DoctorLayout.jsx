@@ -11,7 +11,6 @@ import {
   Bell,
   ChevronDown,
   User,
-  Lock,
   LogOut,
   Pill,
   Heart,
@@ -24,95 +23,66 @@ import '../styles/App.css';
 import '../styles/doctor.css';
 import { COLORS } from '../styles/theme';
 
-// Helper function to convert HEX to RGBA with opacity
-function hexToRgba(hex, opacity = 1) {
-  // Remove # if present
-  hex = hex.replace('#', '');
-  
-  // Parse RGB values
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-}
-
 function AnimatedBackground({ isDark }) {
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 30 }, (_, i) => ({
-        id: i,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-        delay: `${Math.random() * 5}s`,
-        duration: `${5 + Math.random() * 10}s`,
-      })),
-    []
-  );
+  const particleColor = isDark ? COLORS.dark.primary : COLORS.light.primary;
+  
+  const particles = useMemo(() => {
+    return Array.from({ length: 150 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      size: Math.random() * 4 + 3, // 3-7px (increased for better visibility)
+      opacity: Math.random() * 0.3 + 0.6, // 0.6-0.9 (increased for better visibility)
+      duration: Math.random() * 20 + 15, // 15-35s
+      delay: Math.random() * 5, // 0-5s
+    }));
+  }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="grid-animation"
-          style={{
-            backgroundImage: `
-              linear-gradient(${hexToRgba(isDark ? COLORS.dark.muted : COLORS.light.muted, 0.5)} 1px, transparent 1px),
-              linear-gradient(90deg, ${hexToRgba(isDark ? COLORS.dark.muted : COLORS.light.muted, 0.5)} 1px, transparent 1px)
-            `,
-          }}
-        />
-      </div>
-
+    <div 
+      className="fixed inset-0 pointer-events-none overflow-hidden" 
+      style={{ 
+        zIndex: 0, 
+        width: '100vw', 
+        height: '100vh'
+      }}
+    >
+      <style>{`
+        @keyframes float-dot {
+          0%, 100% {
+            transform: translate(0, 0);
+            opacity: var(--opacity);
+          }
+          25% {
+            transform: translate(20px, -30px);
+            opacity: calc(var(--opacity) * 0.8);
+          }
+          50% {
+            transform: translate(-15px, -50px);
+            opacity: calc(var(--opacity) * 0.6);
+          }
+          75% {
+            transform: translate(30px, -20px);
+            opacity: calc(var(--opacity) * 0.9);
+          }
+        }
+      `}</style>
       {particles.map((particle) => (
         <div
           key={particle.id}
-          className="particle"
+          className="absolute rounded-full"
           style={{
             left: particle.left,
             top: particle.top,
-            background: isDark ? COLORS.dark.accent : COLORS.light.accent,
-            animationDelay: particle.delay,
-            animationDuration: particle.duration,
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
+            background: particleColor,
+            opacity: particle.opacity,
+            '--opacity': particle.opacity,
+            animation: `float-dot ${particle.duration}s ease-in-out ${particle.delay}s infinite`,
           }}
         />
       ))}
-
-      <div className="wave-container" style={{ 
-        opacity: 0.06, 
-        height: '120px',
-        maskImage: 'linear-gradient(to top, black 0%, black 60%, transparent 100%)',
-        WebkitMaskImage: 'linear-gradient(to top, black 0%, black 60%, transparent 100%)'
-      }}>
-        <div
-          className="wave wave1"
-          style={{
-            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.2)} 50%, transparent 100%)`,
-          }}
-        />
-        <div
-          className="wave wave2"
-          style={{
-            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.15)} 50%, transparent 100%)`,
-          }}
-        />
-        <div
-          className="wave wave3"
-          style={{
-            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.1)} 50%, transparent 100%)`,
-          }}
-        />
-      </div>
-
-      <div className="orb orb1" style={{ background: isDark ? COLORS.dark.primary : COLORS.light.primary }} />
-      <div className="orb orb2" style={{ background: isDark ? COLORS.dark.accent : COLORS.light.accent }} />
-      <div className="orb orb3" style={{ background: isDark ? COLORS.dark.primary : COLORS.light.primary }} />
-
-      <div className="geometric-shape circle" style={{ border: `3px solid ${isDark ? COLORS.dark.accent : COLORS.light.accent}` }} />
-      <div className="geometric-shape square" style={{ border: `3px solid ${isDark ? COLORS.dark.primary : COLORS.light.primary}` }} />
-      <div className="geometric-shape triangle" style={{ borderBottom: `86px solid ${isDark ? COLORS.dark.accent : COLORS.light.accent}` }} />
-
-      <div className="radial-pulse" style={{ background: `radial-gradient(circle, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.2)}, transparent)` }} />
     </div>
   );
 }
@@ -200,10 +170,6 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
                   <User size={18} />
                   <span>Edit Profile</span>
                 </Link>
-                <button className="w-full flex items-center gap-3 px-4 py-3 transition-all" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-                  <Lock size={18} />
-                  <span>Change Password</span>
-                </button>
                 <button onClick={() => {}} className="w-full flex items-center gap-3 px-4 py-3 border-t transition-all" style={{ color: '#EF4444', borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
                   <LogOut size={18} />
                   <span>Logout</span>
@@ -325,7 +291,7 @@ export default function DoctorLayout() {
       <main className="pt-20 px-4 lg:px-8 pb-10 relative z-10 transition-all duration-300" style={{ 
         // Only apply padding on desktop (md and above), not on mobile
         paddingLeft: isMobile ? '1rem' : (isSidebarOpen ? 'calc(260px + 2rem)' : '1rem'),
-        background: isDark ? COLORS.dark.background : COLORS.light.secondary
+        background: 'transparent'
       }}>
         <Outlet context={{ isDark }} />
       </main>
