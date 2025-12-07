@@ -4,6 +4,7 @@ import { AlertTriangle, Lightbulb, X, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS } from '../styles/theme';
 import { MOCK_PATIENTS, MOCK_PRESCRIPTIONS } from '../data/MockData';
+import useScrollLock from '../hooks/useScrollLock';
 import MedicalBackground from '../components/shared/MedicalBackground';
 
 import PatientSelector from '../components/prescriptions/PatientSelector';
@@ -26,8 +27,18 @@ export default function PrescriptionsPage() {
   const [viewingPrescription, setViewingPrescription] = useState(null);
   const [showMockWarning, setShowMockWarning] = useState(true);
   const [showTip, setShowTip] = useState(true);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
+
+  useScrollLock(isFormModalOpen || isViewModalOpen);
 
   const selectedPatient = patients.find(p => p.id === selectedPatientId);
+
+  // Effect to handle mobile navigation
+  useEffect(() => {
+    if (selectedPatientId) {
+      setShowMobileDetail(true);
+    }
+  }, [selectedPatientId]);
   const patientPrescriptions = selectedPatientId
     ? prescriptions.filter(p => p.patientId === selectedPatientId)
     : [];
@@ -80,7 +91,7 @@ export default function PrescriptionsPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
+    <div className="flex flex-col h-auto md:h-[calc(100vh-8rem)] gap-4">
       {/* Mock Data Warning Banner */}
       <DemoModeBanner theme={theme} isDark={isDark} />
 
@@ -107,26 +118,38 @@ export default function PrescriptionsPage() {
         </div>
       )}
 
-      <div className="flex flex-1 gap-6 overflow-hidden">
-        <PatientSelector
-          patients={patients}
-          selectedPatientId={selectedPatientId}
-          setSelectedPatientId={setSelectedPatientId}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          theme={theme}
-          isDark={isDark}
-        />
+      <div className="flex flex-col md:flex-row flex-1 gap-6 md:overflow-hidden relative">
+        <div className={`w-full md:w-1/3 flex flex-col ${showMobileDetail ? 'hidden md:flex' : 'flex'} h-full`}>
+          <PatientSelector
+            patients={patients}
+            selectedPatientId={selectedPatientId}
+            setSelectedPatientId={setSelectedPatientId}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            theme={theme}
+            isDark={isDark}
+          />
+        </div>
 
         {/* Main Content */}
         <div
-          className="flex-1 rounded-xl shadow-lg border-2 overflow-hidden flex flex-col relative"
+          className={`flex-1 rounded-xl shadow-lg border-2 overflow-hidden flex flex-col relative ${!showMobileDetail ? 'hidden md:flex' : 'flex'}`}
           style={{ background: theme.cardBg, borderColor: theme.primary }}
         >
           <MedicalBackground theme={theme} />
 
           {selectedPatient ? (
             <>
+              {/* Mobile Back Button */}
+              <div className="md:hidden p-2 border-b flex items-center" style={{ borderColor: theme.border, background: theme.cardBg }}>
+                <button
+                  onClick={() => setShowMobileDetail(false)}
+                  className="text-sm font-medium px-3 py-1 rounded-lg flex items-center gap-2"
+                  style={{ color: theme.primary }}
+                >
+                  ← Back to List
+                </button>
+              </div>
               {/* Header */}
               <div className="p-6 pb-0 flex justify-between items-end border-b pb-6 relative z-10" style={{ borderColor: theme.border }}>
                 <div className="flex items-center gap-6">

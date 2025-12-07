@@ -34,7 +34,7 @@ export default function PatientListSidebar({
     <>
       <style>{scrollbarHideStyle}</style>
       <div
-        className="w-1/3 flex flex-col rounded-xl shadow-lg border-2 overflow-hidden select-none"
+        className="w-full h-full flex flex-col rounded-xl shadow-lg border-2 overflow-hidden select-none"
         style={{ background: theme.cardBg, borderColor: theme.primary }}
         onClick={(e) => {
           if (e.target === e.currentTarget) {

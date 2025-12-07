@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Calendar, User, DollarSign, FileText, Search, Plus } from "lucide-react";
 import { COLORS } from "../styles/theme";
+import useScrollLock from '../hooks/useScrollLock';
 
 const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
   const theme = isDark ? COLORS.dark : COLORS.light;
@@ -14,6 +15,8 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useScrollLock(isOpen);
 
   const MOCK_PATIENTS = [
     { id: 101, name: "John Doe" },
@@ -75,7 +78,7 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: theme.border }}>
               <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: theme.text }}>
-                <div className="p-2 rounded-lg" style={{ background: `${theme.primary}20` }}>
+                <div className="p-2 rounded-lg" style={{ background: `${theme.primary} 20` }}>
                   <Plus size={20} style={{ color: theme.primary }} />
                 </div>
                 Create New Invoice
@@ -123,14 +126,14 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
                             onClick={() => handleSelectPatient(p)}
                             className="px-4 py-3 cursor-pointer transition-colors flex items-center gap-3"
                             style={{
-                              borderBottom: `1px solid ${theme.border}`,
+                              borderBottom: `1px solid ${theme.border} `,
                               color: theme.text
                             }}
                             onMouseEnter={(e) => e.currentTarget.style.background = isDark ? theme.secondary : '#F3F4F6'}
                             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                           >
                             <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                              style={{ background: `${theme.primary}20`, color: theme.primary }}>
+                              style={{ background: `${theme.primary} 20`, color: theme.primary }}>
                               {p.name.charAt(0)}
                             </div>
                             {p.name}
@@ -168,15 +171,15 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
                       }}
                     />
                     <style jsx>{`
-                      input[type=number]::-webkit-inner-spin-button, 
-                      input[type=number]::-webkit-outer-spin-button { 
-                        -webkit-appearance: none; 
-                        margin: 0; 
-                      }
-                      input[type=number] {
-                        -moz-appearance: textfield;
-                      }
-                    `}</style>
+input[type = number]:: -webkit - inner - spin - button,
+  input[type = number]:: -webkit - outer - spin - button {
+  -webkit - appearance: none;
+  margin: 0;
+}
+input[type = number] {
+  -moz - appearance: textfield;
+}
+`}</style>
                   </div>
                 </div>
 
@@ -236,7 +239,7 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
                   type="submit"
                   disabled={loading}
                   className="flex-1 px-4 py-3 rounded-xl font-bold text-white transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 shadow-lg"
-                  style={{ background: `linear-gradient(135deg, ${COLORS.light.primary}, ${COLORS.light.accent})` }}
+                  style={{ background: `linear - gradient(135deg, ${COLORS.light.primary}, ${COLORS.light.accent})` }}
                 >
                   {loading ? "Creating..." : "Create Invoice"}
                 </button>

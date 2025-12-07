@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Calendar, Clock, User } from 'lucide-react';
+import useScrollLock from '../../hooks/useScrollLock';
 
 export default function AddSlotModal({
   isOpen,
@@ -16,6 +17,8 @@ export default function AddSlotModal({
     doctor: 'Dr. Sarah Johnson',
     notes: ''
   });
+
+  useScrollLock(isOpen);
 
   if (!isOpen) return null;
 
@@ -41,16 +44,16 @@ export default function AddSlotModal({
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-sm animate-fade-in">
       <style>
         {isDark && `
-          input[type="date"]::-webkit-calendar-picker-indicator,
-          input[type="time"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            cursor: pointer;
-          }
-          input[type="date"]::-webkit-inner-spin-button,
-          input[type="time"]::-webkit-inner-spin-button {
-            filter: invert(1);
-          }
-        `}
+input[type = "date"]:: -webkit - calendar - picker - indicator,
+  input[type = "time"]:: -webkit - calendar - picker - indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+input[type = "date"]:: -webkit - inner - spin - button,
+  input[type = "time"]:: -webkit - inner - spin - button {
+  filter: invert(1);
+}
+`}
       </style>
       <div className="flex min-h-full items-center justify-center p-4">
         <div
@@ -99,9 +102,9 @@ export default function AddSlotModal({
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   className="w-full px-4 py-3 rounded-lg border bg-transparent outline-none focus:ring-2 transition-all"
-                  style={{ 
-                    borderColor: theme.border, 
-                    color: theme.text, 
+                  style={{
+                    borderColor: theme.border,
+                    color: theme.text,
                     '--tw-ring-color': theme.primary,
                     colorScheme: isDark ? 'dark' : 'light'
                   }}
@@ -119,9 +122,9 @@ export default function AddSlotModal({
                   value={formData.time}
                   onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                   className="w-full px-4 py-3 rounded-lg border bg-transparent outline-none focus:ring-2 transition-all"
-                  style={{ 
-                    borderColor: theme.border, 
-                    color: theme.text, 
+                  style={{
+                    borderColor: theme.border,
+                    color: theme.text,
                     '--tw-ring-color': theme.primary,
                     colorScheme: isDark ? 'dark' : 'light'
                   }}
@@ -135,11 +138,11 @@ export default function AddSlotModal({
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                   className="w-full pl-4 pr-10 py-3 rounded-lg border bg-transparent outline-none focus:ring-2 transition-all appearance-none"
-                  style={{ 
-                    borderColor: theme.border, 
-                    color: theme.text, 
+                  style={{
+                    borderColor: theme.border,
+                    color: theme.text,
                     '--tw-ring-color': theme.primary,
-                    backgroundImage: isDark 
+                    backgroundImage: isDark
                       ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23F1F5F9' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`
                       : `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231F2937' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
                     backgroundRepeat: 'no-repeat',
@@ -179,7 +182,7 @@ export default function AddSlotModal({
               <button
                 type="submit"
                 className="px-8 py-2.5 rounded-lg font-bold text-white transition-transform hover:scale-105 shadow-lg"
-                style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.accent})` }}
+                style={{ background: `linear - gradient(135deg, ${theme.primary}, ${theme.accent})` }}
               >
                 Add Appointment
               </button>

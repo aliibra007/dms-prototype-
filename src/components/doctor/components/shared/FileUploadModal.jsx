@@ -1,12 +1,17 @@
 import React, { useState, useRef } from 'react';
-import { X, Upload, File, CheckCircle } from 'lucide-react';
+import { X, Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS } from '../../styles/theme';
+import useScrollLock from '../../hooks/useScrollLock';
 
 export default function FileUploadModal({ isOpen, onClose, onUpload, theme, isDark }) {
     const [dragActive, setDragActive] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const inputRef = useRef(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success, error
+
+    useScrollLock(isOpen);
 
     if (!isOpen) return null;
 

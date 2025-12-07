@@ -3,6 +3,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Lightbulb, X } from 'lucide-react';
 import { COLORS } from '../styles/theme';
 import { MOCK_PATIENTS } from '../data/MockData';
+import useScrollLock from '../hooks/useScrollLock';
 import MedicalBackground from '../components/shared/MedicalBackground';
 
 import PatientListSidebar from '../components/patient-records/PatientListSidebar';
@@ -29,8 +30,18 @@ export default function PatientRecordsPage() {
     const [recordToDelete, setRecordToDelete] = useState(null);
     const [showMockWarning, setShowMockWarning] = useState(true);
     const [showTip, setShowTip] = useState(true);
+    const [showMobileDetail, setShowMobileDetail] = useState(false);
+
+    useScrollLock(isModalOpen || isDeleteModalOpen || !!viewingAttachment);
 
     const selectedPatient = patients.find(p => p.id === selectedPatientId);
+
+    // Effect to handle mobile navigation
+    useEffect(() => {
+        if (selectedPatientId) {
+            setShowMobileDetail(true);
+        }
+    }, [selectedPatientId]);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -128,7 +139,7 @@ export default function PatientRecordsPage() {
 
     return (
         <div
-            className="flex flex-col h-[calc(100vh-8rem)] gap-4"
+            className="flex flex-col h-auto md:h-[calc(100vh-8rem)] gap-4"
             onContextMenu={handleRightClick}
         >
             {/* Mock Data Warning Banner */}
@@ -154,31 +165,44 @@ export default function PatientRecordsPage() {
                         className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                         style={{ color: theme.muted }}
                     >
-                        <X size={16} style={{ color: theme.text}} />
+                        <X size={16} style={{ color: theme.text }} />
                     </button>
                 </div>
             )}
 
-            <div className="flex flex-1 gap-6 overflow-hidden">
-                <PatientListSidebar
-                    patients={patients}
-                    selectedPatientId={selectedPatientId}
-                    setSelectedPatientId={setSelectedPatientId}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                    theme={theme}
-                    isDark={isDark}
-                />
+            <div className="flex flex-col md:flex-row flex-1 gap-6 md:overflow-hidden relative">
+                <div className={`w-full md:w-1/3 flex flex-col ${showMobileDetail ? 'hidden md:flex' : 'flex'} h-full`}>
+                    <PatientListSidebar
+                        patients={patients}
+                        selectedPatientId={selectedPatientId}
+                        setSelectedPatientId={setSelectedPatientId}
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        theme={theme}
+                        isDark={isDark}
+                    />
+                </div>
 
                 {/* Main Content - Patient Details & History */}
                 <div
-                    className="flex-1 rounded-xl shadow-lg border-2 overflow-hidden flex flex-col relative"
+                    className={`flex-1 rounded-xl shadow-lg border-2 overflow-hidden flex flex-col relative ${!showMobileDetail ? 'hidden md:flex' : 'flex'}`}
                     style={{ background: theme.cardBg, borderColor: theme.primary }}
                 >
                     <MedicalBackground theme={theme} />
 
                     {selectedPatient ? (
                         <>
+                            {/* Mobile Back Button */}
+                            <div className="md:hidden p-2 border-b flex items-center" style={{ borderColor: theme.border, background: theme.cardBg }}>
+                                <button
+                                    onClick={() => setShowMobileDetail(false)}
+                                    className="text-sm font-medium px-3 py-1 rounded-lg flex items-center gap-2"
+                                    style={{ color: theme.primary }}
+                                >
+                                    ← Back to List
+                                </button>
+                            </div>
+
                             <PatientDetailsHeader
                                 selectedPatient={selectedPatient}
                                 theme={theme}

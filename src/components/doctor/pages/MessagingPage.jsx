@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { COLORS } from '../styles/theme';
+import useScrollLock from '../hooks/useScrollLock';
 import ContactList from '../components/messaging/ContactList';
 import ChatWindow from '../components/messaging/ChatWindow';
 
@@ -79,6 +80,17 @@ export default function MessagingPage() {
   const [contacts, setContacts] = useState(MOCK_CONTACTS);
   const [wallpaperColor, setWallpaperColor] = useState('transparent');
 
+  // Assuming ChatWindow might have internal modals or overlays, but if not, 
+  // we might not need this here unless there's a specific modal state lifted up.
+  // However, the user requested "messaging when uploading a file", which implies
+  // a file upload modal. If that modal is inside ChatWindow, we might need to pass
+  // the hook down or lift the state up. 
+  // For now, I'll check if there's a file upload state here or if it's in ChatWindow.
+  // Looking at previous code, FileUploadModal is likely used in ChatWindow.
+  // I will check ChatWindow.jsx next to be sure.
+
+  // Placeholder for now, will verify ChatWindow.
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
@@ -136,52 +148,52 @@ export default function MessagingPage() {
     <>
       {/* TRANSPARENCY: Change opacity values to adjust main container (00=fully transparent, ff=fully opaque) */}
       <div
-      className="h-[calc(100vh-8rem)] rounded-xl shadow-lg border-2 overflow-hidden flex backdrop-blur-sm"
+        className="h-[calc(100vh-8rem)] rounded-xl shadow-lg border-2 overflow-hidden flex backdrop-blur-sm"
         onContextMenu={(e) => {
-        e.preventDefault();
-        setSelectedContact(null);
-      }}
-      style={{
+          e.preventDefault();
+          setSelectedContact(null);
+        }}
+        style={{
           background: isDark ? `${COLORS.dark.cardBg}66` : `${COLORS.light.cardBg}33`,
           borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary,
         }}
       >
-      {/* Sidebar - Hidden on mobile when chat is open */}
-      <div className={`w-full md:w-80 flex-shrink-0 ${selectedContact ? 'hidden md:block' : 'block'}`}>
-        <ContactList
-          contacts={contacts}
-          selectedContactId={selectedContact?.id}
-          onSelectContact={setSelectedContact}
-          isDark={isDark}
-        />
-      </div>
+        {/* Sidebar - Hidden on mobile when chat is open */}
+        <div className={`w-full md:w-80 flex-shrink-0 ${selectedContact ? 'hidden md:block' : 'block'}`}>
+          <ContactList
+            contacts={contacts}
+            selectedContactId={selectedContact?.id}
+            onSelectContact={setSelectedContact}
+            isDark={isDark}
+          />
+        </div>
 
-      {/* Chat Window - Hidden on mobile when no chat selected */}
-      <div className={`flex-1 flex flex-col ${!selectedContact ? 'hidden md:flex' : 'flex'}`}>
-        {selectedContact && (
-          <div className="md:hidden p-2 border-b flex items-center" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-            <button
-              onClick={() => setSelectedContact(null)}
-              className="text-sm font-medium px-3 py-1 rounded-lg"
-              style={{ color: isDark ? COLORS.dark.primary : COLORS.light.primary }}
-            >
-              ← Back
-            </button>
-          </div>
-        )}
-        <ChatWindow
-          contact={selectedContact}
-          messages={selectedContact ? (messages[selectedContact.id] || []) : []}
-          onSendMessage={handleSendMessage}
-          isDark={isDark}
-          wallpaperColor={wallpaperColor}
-          onChangeWallpaper={setWallpaperColor}
-          onClearChat={handleClearChat}
-          onBlockUser={handleBlockUser}
-          onDeleteContact={handleDeleteContact}
-        />
+        {/* Chat Window - Hidden on mobile when no chat selected */}
+        <div className={`flex-1 flex flex-col ${!selectedContact ? 'hidden md:flex' : 'flex'}`}>
+          {selectedContact && (
+            <div className="md:hidden p-2 border-b flex items-center" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+              <button
+                onClick={() => setSelectedContact(null)}
+                className="text-sm font-medium px-3 py-1 rounded-lg"
+                style={{ color: isDark ? COLORS.dark.primary : COLORS.light.primary }}
+              >
+                ← Back
+              </button>
+            </div>
+          )}
+          <ChatWindow
+            contact={selectedContact}
+            messages={selectedContact ? (messages[selectedContact.id] || []) : []}
+            onSendMessage={handleSendMessage}
+            isDark={isDark}
+            wallpaperColor={wallpaperColor}
+            onChangeWallpaper={setWallpaperColor}
+            onClearChat={handleClearChat}
+            onBlockUser={handleBlockUser}
+            onDeleteContact={handleDeleteContact}
+          />
+        </div>
       </div>
-    </div>
     </>
   );
 }

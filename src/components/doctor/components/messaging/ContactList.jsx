@@ -24,7 +24,7 @@ export default function ContactList({ contacts, selectedContactId, onSelectConta
             placeholder="Search contacts..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg text-sm outline-none transition-all focus:ring-2"
+            className="w-full pl-10 pr-4 py-2 rounded-lg text-sm outline-none transition-all focus:ring-2 border"
             style={{
               background: isDark ? COLORS.dark.background : COLORS.light.secondary,
               color: isDark ? COLORS.dark.text : COLORS.light.text,

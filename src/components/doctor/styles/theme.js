@@ -4,6 +4,7 @@ export const COLORS = {
         secondary: '#F1F5F9',
         accent: '#0EA5E9',
         muted: '#E2E8F0',
+        mutedText: '#94A3B8', // Higher contrast for text
         text: '#1F2937',
         cardBg: '#FFFFFF',
         success: '#10B981',
@@ -16,6 +17,7 @@ export const COLORS = {
         secondary: '#1E293B',
         accent: '#38BDF8',
         muted: '#475569',
+        mutedText: '#94A3B8', // Higher contrast for text
         text: '#F1F5F9',
         cardBg: '#1E293B',
         background: '#0F172A',

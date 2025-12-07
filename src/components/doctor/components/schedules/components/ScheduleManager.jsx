@@ -140,7 +140,7 @@ const ScheduleManager = ({ isDark }) => {
             </button>
           </div>
 
-          <div className="rounded-xl border-2 overflow-hidden" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+          <div className="hidden md:block rounded-xl border-2 overflow-hidden" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -250,6 +250,103 @@ const ScheduleManager = ({ isDark }) => {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {weeklySchedule.map((day, index) => (
+              <div
+                key={day.day}
+                className="p-4 rounded-xl border-2"
+                style={{
+                  background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg,
+                  borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted
+                }}
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="font-bold text-lg" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{day.day}</h4>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={day.enabled}
+                      onChange={(e) => handleScheduleChange(index, 'enabled', e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                  </label>
+                </div>
+
+                {day.enabled ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Start</label>
+                        <input
+                          type="time"
+                          value={day.startTime}
+                          onChange={(e) => handleScheduleChange(index, 'startTime', e.target.value)}
+                          className="w-full px-2 py-2 rounded border outline-none focus:ring-2"
+                          style={{
+                            background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
+                            color: isDark ? COLORS.dark.text : COLORS.light.text,
+                            borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-medium" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>End</label>
+                        <input
+                          type="time"
+                          value={day.endTime}
+                          onChange={(e) => handleScheduleChange(index, 'endTime', e.target.value)}
+                          className="w-full px-2 py-2 rounded border outline-none focus:ring-2"
+                          style={{
+                            background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
+                            color: isDark ? COLORS.dark.text : COLORS.light.text,
+                            borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Interval</span>
+                      <select
+                        value={day.interval}
+                        onChange={(e) => handleScheduleChange(index, 'interval', parseInt(e.target.value))}
+                        className="px-3 py-1.5 rounded border outline-none focus:ring-2"
+                        style={{
+                          background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
+                          color: isDark ? COLORS.dark.text : COLORS.light.text,
+                          borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted
+                        }}
+                      >
+                        <option value={15}>15 min</option>
+                        <option value={30}>30 min</option>
+                        <option value={45}>45 min</option>
+                        <option value={60}>60 min</option>
+                      </select>
+                    </div>
+
+                    <button
+                      onClick={() => copyToAllDays(index)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-opacity-80"
+                      style={{
+                        background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`,
+                        color: isDark ? COLORS.dark.primary : COLORS.light.primary
+                      }}
+                    >
+                      <Copy size={16} />
+                      Copy to All Days
+                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center py-4 italic" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+                    Day Off
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}

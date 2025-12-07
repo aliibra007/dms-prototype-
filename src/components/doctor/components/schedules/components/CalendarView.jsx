@@ -58,11 +58,11 @@ const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], o
 
     //FIXME: fix the past days month colors or changed color
     if (!isCurrentMonth) {
-      text = isDark ? COLORS.dark.muted : COLORS.light.muted;
+      text = isDark ? COLORS.dark.mutedText : COLORS.light.mutedText;
     }
 
     if (isPast) {
-      text = isDark ? COLORS.dark.muted : COLORS.light.muted;
+      text = isDark ? COLORS.dark.mutedText : COLORS.light.mutedText;
       cursor = 'cursor-not-allowed';
       if (isSelected) {
         bg = isDark ? COLORS.dark.muted : COLORS.light.muted;
@@ -118,7 +118,7 @@ const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], o
       {/* Days Header */}
       <div className="grid grid-cols-7 mb-2">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="text-center text-sm font-semibold py-2" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+          <div key={day} className="text-center text-sm font-semibold py-2" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
             {day}
           </div>
         ))}

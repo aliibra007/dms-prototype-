@@ -1,5 +1,7 @@
 import React from 'react';
-import { X, Activity, Clock } from 'lucide-react';
+import { X, Activity, Clock, Calendar, FileText, User } from 'lucide-react';
+import { COLORS } from '../../styles/theme';
+import useScrollLock from '../../hooks/useScrollLock';
 
 export default function RecentActivityModal({
   isOpen,
@@ -8,6 +10,8 @@ export default function RecentActivityModal({
   theme,
   isDark
 }) {
+  useScrollLock(isOpen); // Use the scroll lock hook
+
   if (!isOpen) return null;
 
   return (
@@ -46,7 +50,7 @@ export default function RecentActivityModal({
                     <div
                       className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
                       style={{
-                        background: `${theme.accent}20`,
+                        background: `${theme.accent} 20`,
                         color: theme.accent
                       }}
                     >
