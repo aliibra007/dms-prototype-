@@ -174,15 +174,19 @@ input[type = "date"]:: -webkit - inner - spin - button,
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2.5 rounded-lg font-bold transition-colors"
-                style={{ color: theme.text, background: isDark ? theme.secondary : '#F3F4F6' }}
+                className="px-5 py-2.5 rounded-lg font-bold transition-colors border"
+                style={{
+                  color: theme.text,
+                  background: isDark ? theme.secondary : 'transparent',
+                  borderColor: theme.border
+                }}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 className="px-8 py-2.5 rounded-lg font-bold text-white transition-transform hover:scale-105 shadow-lg"
-                style={{ background: `linear - gradient(135deg, ${theme.primary}, ${theme.accent})` }}
+                style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.accent})` }}
               >
                 Add Appointment
               </button>

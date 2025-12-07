@@ -88,7 +88,7 @@ const Finance = ({ isDark }) => {
         >
           <Lightbulb size={20} style={{ color: theme.accent }} />
           <p className="text-sm font-medium flex-1" style={{ color: theme.text }}>
-            <span className="font-bold">Pro Tip:</span> You can filter invoices by status or search for specific patients to quickly find what you need.
+            <span className="font-bold">Pro Tip:</span> {financialStats?.tip}
           </p>
           <button
             onClick={() => setShowTip(false)}

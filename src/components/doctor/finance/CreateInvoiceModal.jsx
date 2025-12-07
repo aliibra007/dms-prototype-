@@ -230,8 +230,11 @@ input[type = number] {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-3 rounded-xl font-bold transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                  style={{ color: theme.text }}
+                  className="flex-1 px-4 py-3 rounded-xl font-bold transition-colors hover:bg-black/5 dark:hover:bg-white/5 border"
+                  style={{
+                    color: theme.text,
+                    borderColor: theme.border
+                  }}
                 >
                   Cancel
                 </button>
@@ -239,7 +242,7 @@ input[type = number] {
                   type="submit"
                   disabled={loading}
                   className="flex-1 px-4 py-3 rounded-xl font-bold text-white transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 shadow-lg"
-                  style={{ background: `linear - gradient(135deg, ${COLORS.light.primary}, ${COLORS.light.accent})` }}
+                  style={{ background: `linear-gradient(135deg, ${COLORS.light.primary}, ${COLORS.light.accent})` }}
                 >
                   {loading ? "Creating..." : "Create Invoice"}
                 </button>

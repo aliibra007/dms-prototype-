@@ -38,7 +38,7 @@ function hexToRgba(hex, opacity = 1) {
 
 function AnimatedBackground({ isDark }) {
   const particleColor = isDark ? COLORS.dark.primary : COLORS.light.primary;
-  
+
   const particles = useMemo(() => {
     return Array.from({ length: 150 }, (_, i) => ({
       id: i,
@@ -52,11 +52,11 @@ function AnimatedBackground({ isDark }) {
   }, []);
 
   return (
-    <div 
-      className="fixed inset-0 pointer-events-none overflow-hidden" 
-      style={{ 
-        zIndex: 0, 
-        width: '100vw', 
+    <div
+      className="fixed inset-0 pointer-events-none overflow-hidden"
+      style={{
+        zIndex: 0,
+        width: '100vw',
         height: '100vh'
       }}
     >
@@ -139,6 +139,9 @@ function AnimatedBackground({ isDark }) {
 function Navbar({ toggleSidebar, isDark, toggleTheme }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const notificationRef = useRef(null);
+  const profileRef = useRef(null);
+
   const [notifications, setNotifications] = useState([
     { id: 1, text: 'New appointment scheduled', time: '5 min ago', unread: true },
     { id: 2, text: 'Patient record updated', time: '1 hour ago', unread: true },
@@ -150,7 +153,22 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
   });
 
-  useEffect(() => { }, []);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfile(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   const handleToggleTheme = () => {
@@ -185,26 +203,32 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
           <button onClick={handleToggleTheme} className="p-2 rounded-lg transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`, color: isDark ? COLORS.dark.primary : COLORS.light.primary }}>
             {isDark ? <Sun size={20} /> : <Moon size={20} />}
           </button>
-          <div className="relative" onMouseLeave={() => setShowNotifications(false)}>
+
+          {/* Notifications Dropdown */}
+          <div className="relative h-full flex items-center" ref={notificationRef}>
             <button onClick={() => setShowNotifications((p) => !p)} className="p-2 rounded-lg relative transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.accent : COLORS.light.accent}20`, color: isDark ? COLORS.dark.accent : COLORS.light.accent }}>
               <Bell size={20} />
               {unreadCount > 0 && !showNotifications && <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ background: '#EF4444' }} />}
             </button>
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 rounded-lg shadow-2xl border overflow-hidden animate-fade-in" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-                <div className="px-4 py-3 border-b font-semibold" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, color: isDark ? COLORS.dark.text : COLORS.light.text }}>Notifications</div>
-                <div className="max-h-96 overflow-y-auto">
-                  {notifications.map((n) => (
-                    <div key={n.id} className="px-4 py-3 border-b hover:bg-opacity-50 cursor-pointer transition-all" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, background: n.unread ? `${isDark ? COLORS.dark.accent : COLORS.light.accent}10` : 'transparent', color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-                      <p className="text-sm">{n.text}</p>
-                      <p className="text-xs mt-1" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{n.time}</p>
-                    </div>
-                  ))}
+              <div className="absolute right-0 top-full pt-2 w-80 animate-fade-in z-50">
+                <div className="rounded-lg shadow-2xl border overflow-hidden" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+                  <div className="px-4 py-3 border-b font-semibold" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, color: isDark ? COLORS.dark.text : COLORS.light.text }}>Notifications</div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.map((n) => (
+                      <div key={n.id} className="px-4 py-3 border-b hover:bg-opacity-50 cursor-pointer transition-all" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, background: n.unread ? `${isDark ? COLORS.dark.accent : COLORS.light.accent}10` : 'transparent', color: isDark ? COLORS.dark.text : COLORS.light.text }}>
+                        <p className="text-sm">{n.text}</p>
+                        <p className="text-xs mt-1" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{n.time}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
           </div>
-          <div className="relative" onMouseLeave={() => setShowProfile(false)}>
+
+          {/* Profile Dropdown */}
+          <div className="relative h-full flex items-center" ref={profileRef}>
             <button onClick={() => setShowProfile((p) => !p)} className="flex items-center gap-2 p-2 rounded-lg transition-all hover:scale-105" style={{ background: isDark ? `${COLORS.dark.primary}20` : `${COLORS.light.primary}15` }}>
               <img src={userProfile.avatar} alt="Profile" className="w-8 h-8 rounded-full" />
               <div className="hidden md:block text-left">
@@ -213,15 +237,17 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
               </div>
             </button>
             {showProfile && (
-              <div className="absolute right-0 mt-2 w-full rounded-lg shadow-2xl border overflow-hidden animate-fade-in" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-                <Link to="/doctor/profile" className="flex items-center gap-3 px-4 py-3 transition-all" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-                  <User size={18} />
-                  <span>Edit Profile</span>
-                </Link>
-                <button onClick={() => { }} className="w-full flex items-center gap-3 px-4 py-3 border-t transition-all" style={{ color: '#EF4444', borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-                  <LogOut size={18} />
-                  <span>Logout</span>
-                </button>
+              <div className="absolute right-0 top-full pt-2 w-full min-w-[200px] animate-fade-in z-50">
+                <div className="rounded-lg shadow-2xl border overflow-hidden" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+                  <Link to="/doctor/profile" className="flex items-center gap-3 px-4 py-3 transition-all" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
+                    <User size={18} />
+                    <span>Edit Profile</span>
+                  </Link>
+                  <button onClick={() => { }} className="w-full flex items-center gap-3 px-4 py-3 border-t transition-all" style={{ color: '#EF4444', borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+                    <LogOut size={18} />
+                    <span>Logout</span>
+                  </button>
+                </div>
               </div>
             )}
           </div>

@@ -58,7 +58,7 @@ export default function TreatmentCardEditor({ value, icons = [], onSave, onDelet
             }}
             placeholder="Treatment title"
           />
-          <div className="text-xs mt-1" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+          <div className="text-xs mt-1 text-right" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text, opacity: 0.7 }}>
             {title.length}/40
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function TreatmentCardEditor({ value, icons = [], onSave, onDelet
             }}
             placeholder="Treatment description"
           />
-          <div className="text-xs mt-1" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+          <div className="text-xs mt-1 text-right" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text, opacity: 0.7 }}>
             {description.length}/150
           </div>
         </div>

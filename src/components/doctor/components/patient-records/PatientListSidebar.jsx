@@ -45,7 +45,7 @@ export default function PatientListSidebar({
         <div className="p-4 border-b" style={{ borderColor: theme.border }}>
           <h2 className="text-lg font-bold mb-4" style={{ color: theme.text }}>Patients</h2>
           <div className="relative">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.muted }} />
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: theme.text }} />
             <input
               type="text"
               placeholder="Search patients..."
@@ -96,7 +96,7 @@ export default function PatientListSidebar({
                   </p>
                   <p className="text-sm font-bold opacity-80" style={{ color: theme.text }}>ID: #{patient.id} • {patient.age} yrs</p>
                 </div>
-                <ChevronRight size={16} className="ml-auto" style={{ color: theme.muted }} />
+                <ChevronRight size={16} className="ml-auto" style={{ color: theme.text }} />
               </div>
             );
           })}

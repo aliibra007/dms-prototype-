@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { X, AlertCircle, Paperclip } from 'lucide-react';
 
 export default function AddRecordModal({
   isOpen,

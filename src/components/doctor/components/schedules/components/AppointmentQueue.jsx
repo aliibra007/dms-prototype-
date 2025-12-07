@@ -11,10 +11,12 @@ import {
 } from 'lucide-react';
 
 import HighlightedText from '../../shared/HighlightedText';
+import AppointmentDetailsModal from './AppointmentDetailsModal';
 
 const AppointmentQueue = ({ isDark, theme, appointments, onStatusChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const formatDateTime = (datetimeString) => {
     const date = new Date(datetimeString);
@@ -52,7 +54,7 @@ const AppointmentQueue = ({ isDark, theme, appointments, onStatusChange }) => {
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.muted }} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.text }} />
           <input
             type="text"
             placeholder="Search by patient name, ID, or phone..."
@@ -68,7 +70,7 @@ const AppointmentQueue = ({ isDark, theme, appointments, onStatusChange }) => {
         </div>
         <div className="flex gap-2">
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" size={16} style={{ color: theme.muted }} />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" size={16} style={{ color: theme.text }} />
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
@@ -175,13 +177,27 @@ const AppointmentQueue = ({ isDark, theme, appointments, onStatusChange }) => {
                   {appointment.status === 'confirmed' && (
                     <button onClick={() => onStatusChange(appointment.id, 'completed')} className="flex-1 px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105" style={{ background: '#6366F1' }}>Mark Complete</button>
                   )}
-                  <button className="flex-1 px-4 py-2 rounded-lg border font-semibold transition-all hover:scale-105" style={{ background: 'transparent', borderColor: theme.muted, color: theme.text }}>View Details</button>
+                  <button
+                    onClick={() => setSelectedAppointment(appointment)}
+                    className="flex-1 px-4 py-2 rounded-lg border font-semibold transition-all hover:scale-105"
+                    style={{ background: 'transparent', borderColor: theme.muted, color: theme.text }}
+                  >
+                    View Details
+                  </button>
                 </div>
               </div>
             </div>
           ))
         )}
       </div>
+
+      <AppointmentDetailsModal
+        isOpen={!!selectedAppointment}
+        onClose={() => setSelectedAppointment(null)}
+        appointment={selectedAppointment}
+        theme={theme}
+        isDark={isDark}
+      />
     </div>
   );
 };

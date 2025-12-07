@@ -1,84 +1,70 @@
-import React, { useMemo, useState } from 'react'
-import TreatmentCardEditor from './components/TreatmentCardEditor'
-import { addTreatment, updateTreatment, deleteTreatment } from '../../services/landingPageApi'
+import React, { useState } from 'react';
+import { Plus, AlertCircle } from 'lucide-react';
+import TreatmentCardEditor from './components/TreatmentCardEditor';
+import { addTreatment, updateTreatment, deleteTreatment } from '../../services/landingPageApi';
+import { COLORS } from '../../styles/theme';
 
-const ICONS = ['tooth', 'heart', 'stethoscope', 'pill', 'smile', 'sparkles']
-
-const COLORS = {
-  light: {
-    primary: 'hsl(262, 52%, 47%)',
-    secondary: 'hsl(220, 25%, 95%)',
-    accent: 'hsl(199, 89%, 48%)',
-    muted: 'hsl(240, 10%, 85%)',
-    text: '#1F2937',
-    cardBg: '#FFFFFF',
-  },
-  dark: {
-    primary: 'hsl(262, 45%, 65%)',
-    secondary: 'hsl(220, 20%, 12%)',
-    accent: 'hsl(199, 80%, 55%)',
-    muted: 'hsl(240, 8%, 35%)',
-    text: '#F1F5F9',
-    cardBg: '#1E293B',
-  },
-}
+const ICONS = ['tooth', 'heart', 'stethoscope', 'pill', 'smile', 'sparkles'];
 
 export default function TreatmentsSettings({ initialData = [], isDark }) {
-  const [cards, setCards] = useState(Array.isArray(initialData) ? initialData.slice(0, 6) : [])
-  const [msg, setMsg] = useState('')
+  const theme = isDark ? COLORS.dark : COLORS.light;
+  const [cards, setCards] = useState(Array.isArray(initialData) ? initialData.slice(0, 6) : []);
+  const [msg, setMsg] = useState('');
 
-  const canAdd = cards.length < 6
+  const canAdd = cards.length < 6;
 
   const handleAdd = async () => {
-    if (!canAdd) return
-    const draft = { title: '', description: '', icon: ICONS[0] }
+    if (!canAdd) return;
+    const draft = { title: '', description: '', icon: ICONS[0] };
     try {
-      const created = await addTreatment(draft)
-      setCards((prev) => [...prev, created])
-      setMsg('Treatment added')
+      const created = await addTreatment(draft);
+      setCards((prev) => [...prev, created]);
+      setMsg('Treatment added');
     } catch (e) {
-      setMsg('Failed to add treatment')
+      setMsg('Failed to add treatment');
     }
-  }
+  };
 
   const handleUpdate = async (id, data) => {
     try {
-      const updated = await updateTreatment(id, data)
-      setCards((prev) => prev.map((c) => (c.id === id ? updated : c)))
-      setMsg('Treatment updated')
+      const updated = await updateTreatment(id, data);
+      setCards((prev) => prev.map((c) => (c.id === id ? updated : c)));
+      setMsg('Treatment updated');
     } catch (e) {
-      setMsg('Failed to update treatment')
+      setMsg('Failed to update treatment');
     }
-  }
+  };
 
   const handleDelete = async (id) => {
     try {
-      await deleteTreatment(id)
-      setCards((prev) => prev.filter((c) => c.id !== id))
-      setMsg('Treatment deleted')
+      await deleteTreatment(id);
+      setCards((prev) => prev.filter((c) => c.id !== id));
+      setMsg('Treatment deleted');
     } catch (e) {
-      setMsg('Failed to delete treatment')
+      setMsg('Failed to delete treatment');
     }
-  }
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-        <div className="text-sm" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-          Maximum 6 treatment cards
+    <div className="space-y-8">
+      {/* Header Info */}
+      <div className="flex items-center gap-3 p-4 rounded-xl border"
+        style={{
+          borderColor: theme.border,
+          background: isDark ? theme.secondary : '#F9FAFB'
+        }}>
+        <div className="p-2 rounded-lg" style={{ background: `${theme.primary}20`, color: theme.primary }}>
+          <AlertCircle size={20} />
         </div>
-        <button
-          onClick={handleAdd}
-          disabled={!canAdd}
-          className="px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
-          style={{
-            background: `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})`,
-          }}
-        >
-          Add Treatment
-        </button>
+        <div>
+          <h3 className="font-bold" style={{ color: theme.text }}>Treatment Cards</h3>
+          <p className="text-sm opacity-70" style={{ color: theme.text }}>
+            Manage the services displayed on your landing page (Max 6).
+          </p>
+        </div>
       </div>
 
+      {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cards.map((card) => (
           <TreatmentCardEditor
@@ -88,15 +74,45 @@ export default function TreatmentsSettings({ initialData = [], isDark }) {
             onSave={(data) => handleUpdate(card.id, data)}
             onDelete={() => handleDelete(card.id)}
             isDark={isDark}
+            theme={theme}
           />
         ))}
+
+        {/* Add New Card (Dashed) */}
+        {canAdd && (
+          <button
+            onClick={handleAdd}
+            className="rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-4 min-h-[300px] transition-all hover:bg-opacity-50 group"
+            style={{
+              borderColor: theme.border,
+              background: isDark ? `${theme.secondary}50` : '#F9FAFB',
+            }}
+          >
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
+              style={{ background: `${theme.primary}15`, color: theme.primary }}
+            >
+              <Plus size={32} />
+            </div>
+            <div className="text-center">
+              <h4 className="font-bold text-lg" style={{ color: theme.text }}>Add New Treatment</h4>
+              <p className="text-sm opacity-60" style={{ color: theme.text }}>Click to create a new card</p>
+            </div>
+          </button>
+        )}
       </div>
 
+      {/* Message Toast */}
       {msg && (
-        <div className="text-sm" style={{ color: msg.includes('added') || msg.includes('updated') || msg.includes('deleted') ? '#10B981' : '#EF4444' }}>
-          {msg}
+        <div className="fixed bottom-8 right-8 px-6 py-3 rounded-xl shadow-2xl animate-fade-in z-50 flex items-center gap-3"
+          style={{
+            background: theme.cardBg,
+            border: `1px solid ${msg.includes('Failed') ? theme.danger : theme.success}`
+          }}>
+          <div className={`w-3 h-3 rounded-full ${msg.includes('Failed') ? 'bg-red-500' : 'bg-green-500'}`} />
+          <span className="font-semibold" style={{ color: theme.text }}>{msg}</span>
         </div>
       )}
     </div>
-  )
+  );
 }

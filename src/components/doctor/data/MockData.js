@@ -202,7 +202,14 @@ export const MOCK_INVOICES = [
     { invoice_id: 5, appointment_id: 5, patient_id: 105, doctor_id: 1, amount: 550.0, due_date: '2025-12-11', status: 'pending', paid_at: null, payment_method: 'Credit Card', created_at: '2025-11-27T10:00:00Z', patient_name: 'Emily Carter', patient_phone: '+1 234-567-8904', patient_email: 'emily.c@email.com', appointment_date: '2025-11-27T11:30:00Z', appointment_notes: 'Comprehensive Exam' },
 ];
 
-export const MOCK_FINANCIAL_STATS = { totalRevenue: 45230, monthlyGrowth: 15.2, pendingPayments: 8230, paidInvoices: 124, overdueAmount: 3450 };
+export const MOCK_FINANCIAL_STATS = {
+    totalRevenue: 45230,
+    monthlyGrowth: 15.2,
+    pendingPayments: 8230,
+    paidInvoices: 124,
+    overdueAmount: 3450,
+    tip: 'You can filter invoices by status or search for specific patients to quickly find what you need.'
+};
 
 export const MOCK_REVENUE_DATA = [
     { month: 'Jan', revenue: 32000, expenses: 12000, profit: 20000 },
@@ -230,6 +237,7 @@ export const MOCK_AVAILABILITY = [
 ];
 
 export const MOCK_DASHBOARD_DATA = {
+    tip: 'Review the "Patient Flow" chart to identify peak hours and optimize staff scheduling.',
     stats: [
         { icon: 'Users', title: 'Total Patients', value: '1,234', change: 12, colorKey: 'primary' },
         { icon: 'CalendarIcon', title: 'Appointments Today', value: '48', change: 8, colorKey: 'accent' },

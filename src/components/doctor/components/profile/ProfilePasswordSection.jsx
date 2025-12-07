@@ -117,7 +117,7 @@ export default function ProfilePasswordSection({
               onChange('confirmPassword', '')
             }}
             className="text-sm"
-            style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}
+            style={{ color: isDark ? COLORS.dark.text : COLORS.light.text, opacity: 0.7 }}
           >
             Cancel password change
           </button>

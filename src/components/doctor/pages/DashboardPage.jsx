@@ -53,7 +53,7 @@ export default function DashboardPage() {
         >
           <Lightbulb size={20} style={{ color: theme.accent }} />
           <p className="text-sm font-medium flex-1" style={{ color: theme.text }}>
-            <span className="font-bold">Pro Tip:</span> Review the "Patient Flow" chart to identify peak hours and optimize staff scheduling.
+            <span className="font-bold">Pro Tip:</span> {dashboardData.tip}
           </p>
           <button
             onClick={() => setShowTip(false)}

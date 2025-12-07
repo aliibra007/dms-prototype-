@@ -39,7 +39,7 @@ export default function ProfileAvatarSection({ isDark, fullName, onChangePhoto }
         <h3 className="font-bold text-lg" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
           {fullName}
         </h3>
-        <p className="text-sm" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+        <p className="text-sm font-medium opacity-70" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
           Cardiologist
         </p>
       </div>

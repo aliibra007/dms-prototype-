@@ -151,27 +151,27 @@ export default function PrescriptionsPage() {
                 </button>
               </div>
               {/* Header */}
-              <div className="p-6 pb-0 flex justify-between items-end border-b pb-6 relative z-10" style={{ borderColor: theme.border }}>
-                <div className="flex items-center gap-6">
+              <div className="p-6 pb-0 flex flex-col md:flex-row justify-between items-start md:items-end border-b pb-6 relative z-10 gap-4 md:gap-0" style={{ borderColor: theme.border }}>
+                <div className="flex items-center gap-6 w-full md:w-auto">
                   <img
                     src={selectedPatient.image}
                     alt={selectedPatient.name}
-                    className="w-24 h-24 rounded-2xl shadow-lg border-4 z-10"
+                    className="w-20 h-20 md:w-24 md:h-24 rounded-2xl shadow-lg border-4 z-10"
                     style={{ borderColor: theme.primary }}
                   />
-                  <div className="mb-2">
-                    <h1 className="text-3xl font-black tracking-tight" style={{ color: theme.text }}>
+                  <div className="mb-2 flex-1">
+                    <h1 className="text-2xl md:text-3xl font-black tracking-tight" style={{ color: theme.text }}>
                       {selectedPatient.name}
                     </h1>
-                    <div className="flex flex-wrap gap-3 mt-3 font-medium text-sm">
+                    <div className="flex flex-wrap gap-2 md:gap-3 mt-2 md:mt-3 font-medium text-sm">
                       <span
-                        className="flex items-center gap-1 px-3 py-1 rounded-full"
+                        className="flex items-center gap-1 px-3 py-1 rounded-full text-xs md:text-sm"
                         style={{ background: `${theme.primary}40`, color: theme.text }}
                       >
                         ID: #{selectedPatient.id} • {selectedPatient.age} yrs
                       </span>
                       <span
-                        className="flex items-center gap-1 px-3 py-1 rounded-full"
+                        className="flex items-center gap-1 px-3 py-1 rounded-full text-xs md:text-sm"
                         style={{ background: `${theme.success}25`, color: theme.text }}
                       >
                         {patientPrescriptions.length} Prescription(s)
@@ -181,7 +181,7 @@ export default function PrescriptionsPage() {
                 </div>
                 <button
                   onClick={handleNewPrescription}
-                  className="mb-2 px-6 py-3 rounded-xl font-bold text-white shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
+                  className="w-full md:w-auto mb-2 px-6 py-3 rounded-xl font-bold text-white shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2"
                   style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.accent})` }}
                 >
                   <Plus size={20} /> New Prescription

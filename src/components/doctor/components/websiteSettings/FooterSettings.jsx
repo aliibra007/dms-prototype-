@@ -1,175 +1,195 @@
-import React, { useState } from 'react'
-import ImageUploader from './components/ImageUploader'
-import { updateFooterSettings } from '../../services/landingPageApi'
-import defaultFooterLogo from '../../../../images/Footerlogo.png'
+import React, { useState } from 'react';
+import { Save, Globe, Phone, Mail, MapPin, Shield } from 'lucide-react';
+import ImageUploader from './components/ImageUploader';
+import { updateFooterSettings } from '../../services/landingPageApi';
+import defaultFooterLogo from '../../../../images/Footerlogo.png';
+import { COLORS } from '../../styles/theme';
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/
-
-const COLORS = {
-  light: {
-    primary: 'hsl(262, 52%, 47%)',
-    secondary: 'hsl(220, 25%, 95%)',
-    accent: 'hsl(199, 89%, 48%)',
-    muted: 'hsl(240, 10%, 85%)',
-    text: '#1F2937',
-    cardBg: '#FFFFFF',
-  },
-  dark: {
-    primary: 'hsl(262, 45%, 65%)',
-    secondary: 'hsl(220, 20%, 12%)',
-    accent: 'hsl(199, 80%, 55%)',
-    muted: 'hsl(240, 8%, 35%)',
-    text: '#F1F5F9',
-    cardBg: '#1E293B',
-  },
-}
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
 
 export default function FooterSettings({ initialData = {}, isDark }) {
-  const [logo, setLogo] = useState(initialData.logo || '')
-  const [description, setDescription] = useState(initialData.description || '')
-  const [phone, setPhone] = useState(initialData.phone || '')
-  const [email, setEmail] = useState(initialData.email || '')
-  const [address, setAddress] = useState(initialData.address || '')
-  const [copyright, setCopyright] = useState(initialData.copyright || '')
-  const [saving, setSaving] = useState(false)
-  const [msg, setMsg] = useState('')
+  const theme = isDark ? COLORS.dark : COLORS.light;
+  const [logo, setLogo] = useState(initialData.logo || '');
+  const [description, setDescription] = useState(initialData.description || '');
+  const [phone, setPhone] = useState(initialData.phone || '');
+  const [email, setEmail] = useState(initialData.email || '');
+  const [address, setAddress] = useState(initialData.address || '');
+  const [copyright, setCopyright] = useState(initialData.copyright || '');
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState('');
 
   const handleSave = async () => {
     if (email && !emailRegex.test(email)) {
-      setMsg('Invalid email')
-      return
+      setMsg('Invalid email format');
+      return;
     }
     if (phone && !phoneRegex.test(phone)) {
-      setMsg('Invalid phone number')
-      return
+      setMsg('Invalid phone number format');
+      return;
     }
     try {
-      setSaving(true)
-      setMsg('')
-      await updateFooterSettings({ logo, description: description.slice(0, 200), phone, email, address, copyright })
-      setMsg('Changes saved successfully')
+      setSaving(true);
+      setMsg('');
+      await updateFooterSettings({ logo, description: description.slice(0, 200), phone, email, address, copyright });
+      setMsg('Changes saved successfully');
     } catch (e) {
-      setMsg('Failed to save changes')
+      setMsg('Failed to save changes');
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h3 className="font-semibold mb-3" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-            Footer Logo
-          </h3>
-          <ImageUploader value={logo} onChange={setLogo} fallback={defaultFooterLogo} isDark={isDark} />
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Branding Section */}
+        <div className="rounded-xl border p-6 space-y-6" style={{ borderColor: theme.border, background: isDark ? theme.secondary : '#F9FAFB' }}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg" style={{ background: `${theme.primary}20`, color: theme.primary }}>
+              <Globe size={20} />
+            </div>
+            <h3 className="text-lg font-bold" style={{ color: theme.text }}>Branding & Info</h3>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-2" style={{ color: theme.text }}>Footer Logo</label>
+              <ImageUploader value={logo} onChange={setLogo} fallback={defaultFooterLogo} isDark={isDark} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold mb-2" style={{ color: theme.text }}>Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value.slice(0, 200))}
+                className="w-full border rounded-xl px-4 py-3 h-32 outline-none transition-all focus:ring-2 resize-none"
+                style={{
+                  background: theme.cardBg,
+                  borderColor: theme.border,
+                  color: theme.text,
+                  '--tw-ring-color': theme.primary
+                }}
+                placeholder="Short footer description..."
+              />
+              <div className="text-xs mt-1 text-right opacity-60" style={{ color: theme.text }}>
+                {description.length}/200
+              </div>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-            Footer Description
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value.slice(0, 200))}
-            className="w-full border rounded-lg px-4 py-2.5 h-32 outline-none transition-all focus:ring-2 resize-none"
-            style={{
-              background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
-              borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted,
-              color: isDark ? COLORS.dark.text : COLORS.light.text,
-            }}
-            placeholder="Short footer description"
-          />
-          <div className="text-xs mt-1" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-            {description.length}/200
+
+        {/* Contact Section */}
+        <div className="rounded-xl border p-6 space-y-6" style={{ borderColor: theme.border, background: isDark ? theme.secondary : '#F9FAFB' }}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg" style={{ background: `${theme.accent}20`, color: theme.accent }}>
+              <Phone size={20} />
+            </div>
+            <h3 className="text-lg font-bold" style={{ color: theme.text }}>Contact Details</h3>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: theme.text }}>
+                <Phone size={14} /> Phone
+              </label>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full border rounded-xl px-4 py-3 outline-none transition-all focus:ring-2"
+                style={{
+                  background: theme.cardBg,
+                  borderColor: theme.border,
+                  color: theme.text,
+                  '--tw-ring-color': theme.primary
+                }}
+                placeholder="+1 555 123 4567"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: theme.text }}>
+                <Mail size={14} /> Email
+              </label>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border rounded-xl px-4 py-3 outline-none transition-all focus:ring-2"
+                style={{
+                  background: theme.cardBg,
+                  borderColor: theme.border,
+                  color: theme.text,
+                  '--tw-ring-color': theme.primary
+                }}
+                placeholder="hello@example.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold mb-2 flex items-center gap-2" style={{ color: theme.text }}>
+                <MapPin size={14} /> Address
+              </label>
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full border rounded-xl px-4 py-3 h-24 outline-none transition-all focus:ring-2 resize-none"
+                style={{
+                  background: theme.cardBg,
+                  borderColor: theme.border,
+                  color: theme.text,
+                  '--tw-ring-color': theme.primary
+                }}
+                placeholder="Clinic address..."
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-            Phone
-          </label>
-          <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2.5 outline-none transition-all focus:ring-2"
-            style={{
-              background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
-              borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted,
-              color: isDark ? COLORS.dark.text : COLORS.light.text,
-            }}
-            placeholder="+1 555 123 4567"
-          />
+      {/* Copyright Section */}
+      <div className="rounded-xl border p-6" style={{ borderColor: theme.border, background: isDark ? theme.secondary : '#F9FAFB' }}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 rounded-lg" style={{ background: `${theme.success}20`, color: theme.success }}>
+            <Shield size={20} />
+          </div>
+          <h3 className="text-lg font-bold" style={{ color: theme.text }}>Legal</h3>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-            Email
-          </label>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2.5 outline-none transition-all focus:ring-2"
-            style={{
-              background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
-              borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted,
-              color: isDark ? COLORS.dark.text : COLORS.light.text,
-            }}
-            placeholder="hello@example.com"
-          />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium mb-2" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-            Address
-          </label>
-          <textarea
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2.5 h-24 outline-none transition-all focus:ring-2 resize-none"
-            style={{
-              background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
-              borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted,
-              color: isDark ? COLORS.dark.text : COLORS.light.text,
-            }}
-            placeholder="Clinic address"
-          />
-        </div>
-        <div className="md:col-span-2">
-          <label className="block text-sm font-medium mb-2" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-            Copyright
-          </label>
+          <label className="block text-sm font-bold mb-2" style={{ color: theme.text }}>Copyright Text</label>
           <input
             value={copyright}
             onChange={(e) => setCopyright(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2.5 outline-none transition-all focus:ring-2"
+            className="w-full border rounded-xl px-4 py-3 outline-none transition-all focus:ring-2"
             style={{
-              background: isDark ? COLORS.dark.secondary : COLORS.light.secondary,
-              borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted,
-              color: isDark ? COLORS.dark.text : COLORS.light.text,
+              background: theme.cardBg,
+              borderColor: theme.border,
+              color: theme.text,
+              '--tw-ring-color': theme.primary
             }}
             placeholder="© 2025 Clinic Name. All rights reserved."
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-3 pt-4 border-t" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-6 py-2.5 rounded-lg text-white font-semibold transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
-          style={{
-            background: `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})`,
-          }}
-        >
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
+      {/* Save Action */}
+      <div className="flex items-center justify-end gap-4 pt-4 border-t" style={{ borderColor: theme.border }}>
         {msg && (
-          <span className="text-sm" style={{ color: msg.includes('success') ? '#10B981' : '#EF4444' }}>
+          <span className="text-sm font-medium animate-fade-in" style={{ color: msg.includes('success') ? theme.success : theme.danger }}>
             {msg}
           </span>
         )}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="px-8 py-3 rounded-xl text-white font-bold shadow-lg transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
+          style={{
+            background: `linear-gradient(135deg, ${theme.primary}, ${theme.accent})`,
+          }}
+        >
+          <Save size={20} />
+          {saving ? 'Saving...' : 'Save Changes'}
+        </button>
       </div>
     </div>
-  )
+  );
 }
