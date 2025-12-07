@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { AlertTriangle, Lightbulb, X } from 'lucide-react';
+import { Lightbulb, X } from 'lucide-react';
 import { COLORS } from '../styles/theme';
 import { MOCK_PATIENTS } from '../data/MockData';
 import MedicalBackground from '../components/shared/MedicalBackground';
@@ -12,6 +12,8 @@ import AddRecordModal from '../components/patient-records/AddRecordModal';
 import DeleteRecordModal from '../components/patient-records/DeleteRecordModal';
 import AttachmentViewModal from '../components/patient-records/AttachmentViewModal';
 import EmptyPatientState from '../components/patient-records/EmptyPatientState';
+
+import DemoModeBanner from '../components/shared/DemoModeBanner';
 
 export default function PatientRecordsPage() {
     const { isDark } = useOutletContext();
@@ -55,7 +57,7 @@ export default function PatientRecordsPage() {
             const indexB = b.name.toLowerCase().indexOf(searchTerm.toLowerCase());
             return indexA - indexB;
         });
-    
+
     const selectedPatientIndex = filteredPatients.findIndex(p => p.id === selectedPatientId);
     const largePfpBorderColor = selectedPatientIndex >= 0
         ? [theme.success, theme.warning, theme.danger, theme.primary][selectedPatientIndex % 4]
@@ -131,25 +133,7 @@ export default function PatientRecordsPage() {
         >
             {/* Mock Data Warning Banner */}
             {showMockWarning && (
-                <div
-                    className="rounded-lg p-3 flex items-center gap-3 shrink-0 border relative animate-fade-in"
-                    style={{
-                        background: `${theme.warning}25`,
-                        borderColor: `${theme.warning}40`
-                    }}
-                >
-                    <AlertTriangle size={20} style={{ color: theme.warning }} />
-                    <p className="text-sm font-medium flex-1" style={{ color: theme.text }}>
-                        <span className="font-bold">Demo Mode:</span> You are viewing mock patient data. Changes will not be saved to a database.
-                    </p>
-                    <button
-                        onClick={() => setShowMockWarning(false)}
-                        className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                        style={{ color: theme.muted }}
-                    >
-                        <X size={16} />
-                    </button>
-                </div>
+                <DemoModeBanner onClose={() => setShowMockWarning(false)} theme={theme} />
             )}
 
             {/* Pro Tip Banner */}
@@ -170,7 +154,7 @@ export default function PatientRecordsPage() {
                         className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
                         style={{ color: theme.muted }}
                     >
-                        <X size={16} />
+                        <X size={16} style={{ color: theme.text}} />
                     </button>
                 </div>
             )}

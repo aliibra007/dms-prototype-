@@ -30,7 +30,7 @@ export default function PrescriptionCard({
           </div>
         </div>
         <div className="text-right">
-          <div className="flex items-center gap-1 text-sm mb-1" style={{ color: theme.muted }}>
+          <div className="flex items-center gap-1 text-sm mb-1" style={{ color: theme.text }}>
             <Calendar size={14} />
             <span>{new Date(prescription.date).toLocaleDateString()}</span>
           </div>
@@ -51,7 +51,7 @@ export default function PrescriptionCard({
           <Pill size={14} style={{ color: theme.primary }} />
           <span className="font-semibold">{prescription.medicines.length} Medicine(s)</span>
         </div>
-        <div className="flex items-center gap-2 text-sm" style={{ color: theme.muted }}>
+        <div className="flex items-center gap-2 text-sm" style={{ color: theme.text }}>
           <User size={14} />
           <span>{prescription.doctor}</span>
         </div>
@@ -60,7 +60,7 @@ export default function PrescriptionCard({
       {prescription.notes && (
         <div className="mt-4 pt-4 border-t" style={{ borderColor: theme.border }}>
           <div className="flex items-start gap-2">
-            <FileText size={14} className="mt-0.5" style={{ color: theme.muted }} />
+            <FileText size={14} className="mt-0.5" style={{ color: theme.text }} />
             <p className="text-sm line-clamp-2" style={{ color: theme.text }}>{prescription.notes}</p>
           </div>
         </div>

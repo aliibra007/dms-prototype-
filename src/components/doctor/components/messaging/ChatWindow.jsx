@@ -1,20 +1,36 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Paperclip, MoreVertical, Trash2, Ban, XCircle } from 'lucide-react';
+import { Send, Paperclip, MoreVertical, Trash2, Ban, XCircle, UserPlus } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { COLORS } from '../../styles/theme';
 import MessageBubble from './MessageBubble';
 import RoleBadge from './RoleBadge';
+import FileUploadModal from '../shared/FileUploadModal';
 
-export default function ChatWindow({ contact, messages, onSendMessage, isDark }) {
+export default function ChatWindow({
+  contact,
+  messages,
+  onSendMessage,
+  isDark,
+  wallpaperColor,
+  onChangeWallpaper,
+  onClearChat,
+  onBlockUser,
+  onDeleteContact
+}) {
   const [newMessage, setNewMessage] = useState('');
   const [showOptions, setShowOptions] = useState(false);
+  const [showWallpaperPicker, setShowWallpaperPicker] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const messagesEndRef = useRef(null);
   const optionsRef = useRef(null);
+  const theme = isDark ? COLORS.dark : COLORS.light;
 
   // Close options when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (optionsRef.current && !optionsRef.current.contains(event.target)) {
         setShowOptions(false);
+        setShowWallpaperPicker(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -34,7 +50,7 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
   const handleSend = (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    onSendMessage(newMessage);
+    onSendMessage({ type: 'text', content: newMessage });
     setNewMessage('');
   };
 
@@ -46,6 +62,26 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
     window.open(`https://wa.me/${phoneNumber}`, '_blank');
   };
 
+  const handleFileUpload = (file) => {
+    onSendMessage({
+      type: 'file',
+      content: { name: file.name, size: file.size, type: file.type }
+    });
+  };
+
+  const handleSharePatient = () => {
+    // Mock sharing a patient
+    const mockPatient = {
+      id: 101,
+      name: "John Doe",
+      age: 45,
+      condition: "Hypertension",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John"
+    };
+    onSendMessage({ type: 'patient', content: mockPatient });
+    setShowOptions(false);
+  };
+
   if (!contact) {
     return (
       <div className="h-full flex items-center justify-center flex-col gap-4 opacity-50" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
@@ -54,6 +90,14 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
       </div>
     );
   }
+
+  const wallpaperPresets = [
+    { name: 'Default', value: 'transparent' },
+    { name: 'Primary', value: isDark ? COLORS.dark.primary : COLORS.light.primary },
+    { name: 'Accent', value: isDark ? COLORS.dark.accent : COLORS.light.accent },
+    { name: 'Success', value: isDark ? COLORS.dark.success : COLORS.light.success },
+    { name: 'Warning', value: isDark ? COLORS.dark.warning : COLORS.light.warning },
+  ];
 
   return (
     <div className="h-full flex flex-col relative">
@@ -95,39 +139,92 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
           </button>
           
           <div ref={optionsRef} className="relative">
-            <button 
+            <button
               onClick={() => setShowOptions(!showOptions)}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" 
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}
             >
               <MoreVertical size={20} />
             </button>
 
             {showOptions && (
-              <div className="absolute right-0 top-full mt-2 w-56 rounded-xl shadow-2xl border overflow-hidden animate-fade-in z-50"
+              <div className="absolute right-0 top-full mt-2 w-64 rounded-xl shadow-2xl border overflow-hidden animate-fade-in z-50"
                 style={{
                   background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg,
                   borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted
                 }}
               >
                 <div className="py-1">
-                  <button className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-opacity-10 transition-colors"
-                    style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}
-                  >
-                    <XCircle size={18} />
-                    <span className="text-sm">Clear Chat</span>
-                  </button>
-                  <div className="h-px my-1" style={{ background: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-                  <button className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-opacity-10 transition-colors text-red-500"
-                  >
-                    <Ban size={18} />
-                    <span className="text-sm">Block User</span>
-                  </button>
-                  <button className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-opacity-10 transition-colors text-red-500"
-                  >
-                    <Trash2 size={18} />
-                    <span className="text-sm">Delete Contact</span>
-                  </button>
+                  {showWallpaperPicker ? (
+                    <div className="p-3">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-semibold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Select Wallpaper</span>
+                        <button
+                          onClick={() => setShowWallpaperPicker(false)}
+                          className="text-xs hover:underline"
+                          style={{ color: isDark ? COLORS.dark.primary : COLORS.light.primary }}
+                        >
+                          Back
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-5 gap-2">
+                        {wallpaperPresets.map((preset) => (
+                          <button
+                            key={preset.name}
+                            onClick={() => onChangeWallpaper(preset.value)}
+                            className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110"
+                            style={{
+                              background: preset.value === 'transparent' ? (isDark ? COLORS.dark.background : COLORS.light.secondary) : preset.value,
+                              borderColor: wallpaperColor === preset.value ? (isDark ? COLORS.dark.text : COLORS.light.text) : 'transparent'
+                            }}
+                            title={preset.name}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setShowWallpaperPicker(true)}
+                        className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-opacity-10 transition-colors"
+                        style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}
+                      >
+                        <ImageIcon size={18} />
+                        <span className="text-sm">Change Wallpaper</span>
+                      </button>
+                      <button
+                        onClick={handleSharePatient}
+                        className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-opacity-10 transition-colors"
+                        style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}
+                      >
+                        <UserPlus size={18} />
+                        <span className="text-sm">Share Patient Profile</span>
+                      </button>
+                      <button
+                        onClick={() => { onClearChat(); setShowOptions(false); }}
+                        className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-opacity-10 transition-colors"
+                        style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}
+                      >
+                        <XCircle size={18} />
+                        <span className="text-sm">Clear Chat</span>
+                      </button>
+                      <div className="h-px my-1" style={{ background: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
+                      <button
+                        onClick={() => { onBlockUser(); setShowOptions(false); }}
+                        className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-opacity-10 transition-colors text-red-500"
+                      >
+                        <Ban size={18} />
+                        <span className="text-sm">Block User</span>
+                      </button>
+                      <button
+                        onClick={() => { onDeleteContact(); setShowOptions(false); }}
+                        className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-opacity-10 transition-colors text-red-500"
+                      >
+                        <Trash2 size={18} />
+                        <span className="text-sm">Delete Contact</span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -136,8 +233,10 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4"
-        style={{ background: isDark ? COLORS.dark.background : COLORS.light.secondary }}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 transition-colors duration-300"
+        style={{
+          background: wallpaperColor === 'transparent' ? (isDark ? COLORS.dark.background : COLORS.light.secondary) : wallpaperColor
+        }}
       >
         {messages.map((msg) => (
           <MessageBubble
@@ -159,14 +258,17 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
         }}
       >
         <form onSubmit={handleSend} className="flex items-center gap-2">
-          <button
+          <motion.button
             type="button"
-            className="p-2 rounded-full transition-colors hover:bg-opacity-10"
-            style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted, backgroundColor: `${isDark ? COLORS.dark.muted : COLORS.light.muted}10` }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsUploadModalOpen(true)}
+            className="p-2 rounded-full hover:bg-opacity-10 transition-colors"
+            style={{ color: isDark ? COLORS.dark.text : COLORS.light.text, backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}
           >
             <Paperclip size={20} />
-          </button>
-          
+          </motion.button>
+
           <input
             type="text"
             value={newMessage}
@@ -180,19 +282,29 @@ export default function ChatWindow({ contact, messages, onSendMessage, isDark })
               '--tw-ring-color': isDark ? COLORS.dark.primary : COLORS.light.primary,
             }}
           />
-          
-          <button
+
+          <motion.button
             type="submit"
             disabled={!newMessage.trim()}
-            className="p-3 rounded-full text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-3 rounded-full text-white shadow-lg transition-all disabled:opacity-50 disabled:hover:scale-100"
             style={{
               background: `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})`,
             }}
           >
             <Send size={18} />
-          </button>
+          </motion.button>
         </form>
       </div>
+
+      <FileUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUpload={handleFileUpload}
+        theme={theme}
+        isDark={isDark}
+      />
     </div>
   );
 }

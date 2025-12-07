@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { AlertTriangle, Lightbulb, X, Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS } from '../styles/theme';
 import { MOCK_PATIENTS, MOCK_PRESCRIPTIONS } from '../data/MockData';
 import MedicalBackground from '../components/shared/MedicalBackground';
@@ -9,6 +10,7 @@ import PatientSelector from '../components/prescriptions/PatientSelector';
 import PrescriptionForm from '../components/prescriptions/PrescriptionForm';
 import PrescriptionHistoryList from '../components/prescriptions/PrescriptionHistoryList';
 import ViewPrescriptionModal from '../components/prescriptions/ViewPrescriptionModal';
+import DemoModeBanner from '../components/shared/DemoModeBanner';
 
 export default function PrescriptionsPage() {
   const { isDark } = useOutletContext();
@@ -80,27 +82,7 @@ export default function PrescriptionsPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
       {/* Mock Data Warning Banner */}
-      {showMockWarning && (
-        <div
-          className="rounded-lg p-3 flex items-center gap-3 shrink-0 border relative animate-fade-in"
-          style={{
-            background: `${theme.warning}25`,
-            borderColor: `${theme.warning}40`
-          }}
-        >
-          <AlertTriangle size={20} style={{ color: theme.warning }} />
-          <p className="text-sm font-medium flex-1" style={{ color: theme.text }}>
-            <span className="font-bold">Demo Mode:</span> You are viewing mock prescription data. Changes will not be saved to a database.
-          </p>
-          <button
-            onClick={() => setShowMockWarning(false)}
-            className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-            style={{ color: theme.muted }}
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
+      <DemoModeBanner theme={theme} isDark={isDark} />
 
       {/* Pro Tip Banner */}
       {showTip && (
@@ -118,7 +100,7 @@ export default function PrescriptionsPage() {
           <button
             onClick={() => setShowTip(false)}
             className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-            style={{ color: theme.muted }}
+            style={{ color: theme.text }}
           >
             <X size={16} />
           </button>
@@ -213,47 +195,61 @@ export default function PrescriptionsPage() {
       </div>
 
       {/* Create/Edit Prescription Modal */}
-      {isFormModalOpen && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <div
-              className="rounded-2xl w-full max-w-2xl shadow-2xl transform transition-all scale-100 border relative"
-              style={{ background: theme.cardBg, borderColor: theme.border }}
-            >
-              <div className="p-6">
-                <PrescriptionForm
-                  selectedPatient={selectedPatient}
-                  theme={theme}
-                  isDark={isDark}
-                  onSave={handleSavePrescription}
-                  onClose={() => {
-                    setIsFormModalOpen(false);
-                    setEditingPrescription(null);
-                  }}
-                  editingPrescription={editingPrescription}
-                />
-              </div>
+      <AnimatePresence>
+        {isFormModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-sm"
+            onClick={() => {
+              setIsFormModalOpen(false);
+              setEditingPrescription(null);
+            }}
+          >
+            <div className="flex min-h-full items-center justify-center p-4">
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="rounded-2xl w-full max-w-2xl shadow-2xl border relative"
+                style={{ background: theme.cardBg, borderColor: theme.border }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-6">
+                  <PrescriptionForm
+                    selectedPatient={selectedPatient}
+                    theme={theme}
+                    isDark={isDark}
+                    onSave={handleSavePrescription}
+                    onClose={() => {
+                      setIsFormModalOpen(false);
+                      setEditingPrescription(null);
+                    }}
+                    editingPrescription={editingPrescription}
+                  />
+                </div>
+              </motion.div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* View Prescription Modal */}
-      {isViewModalOpen && (
-        <ViewPrescriptionModal
-          prescription={viewingPrescription}
-          theme={theme}
-          isDark={isDark}
-          onClose={() => {
-            setIsViewModalOpen(false);
-            setViewingPrescription(null);
-          }}
-          onDownload={() => {
-            console.log('Prescription downloaded');
-          }}
-          onSend={handleSendPrescription}
-        />
-      )}
+      <ViewPrescriptionModal
+        prescription={viewingPrescription}
+        theme={theme}
+        isDark={isDark}
+        onClose={() => {
+          setIsViewModalOpen(false);
+          setViewingPrescription(null);
+        }}
+        onDownload={() => {
+          console.log('Prescription downloaded');
+        }}
+        onSend={handleSendPrescription}
+      />
     </div>
   );
 }

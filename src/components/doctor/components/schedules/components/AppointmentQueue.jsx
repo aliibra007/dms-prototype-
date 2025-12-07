@@ -10,28 +10,9 @@ import {
   Filter
 } from 'lucide-react';
 
-const COLORS = {
-  light: {
-    primary: 'hsl(262, 52%, 47%)',
-    secondary: 'hsl(220, 25%, 95%)',
-    accent: 'hsl(199, 89%, 48%)',
-    muted: 'hsl(240, 10%, 85%)',
-    background: '#FFFFFF',
-    text: '#1F2937',
-    cardBg: '#FFFFFF',
-  },
-  dark: {
-    primary: 'hsl(262, 45%, 65%)',
-    secondary: 'hsl(220, 20%, 12%)',
-    accent: 'hsl(199, 80%, 55%)',
-    muted: 'hsl(240, 8%, 35%)',
-    background: '#0F172A',
-    text: '#F1F5F9',
-    cardBg: '#1E293B',
-  },
-};
+import HighlightedText from '../../shared/HighlightedText';
 
-const AppointmentQueue = ({ isDark, appointments, onStatusChange }) => {
+const AppointmentQueue = ({ isDark, theme, appointments, onStatusChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
@@ -71,38 +52,38 @@ const AppointmentQueue = ({ isDark, appointments, onStatusChange }) => {
       {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={20} style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-          <input 
-            type="text" 
-            placeholder="Search by patient name, ID, or phone..." 
-            value={searchTerm} 
-            onChange={(e) => setSearchTerm(e.target.value)} 
-            className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none transition-all" 
-            style={{ 
-              background: isDark ? COLORS.dark.secondary : COLORS.light.secondary, 
-              borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, 
-              color: isDark ? COLORS.dark.text : COLORS.light.text 
-            }} 
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={20} style={{ color: theme.muted }} />
+          <input
+            type="text"
+            placeholder="Search by patient name, ID, or phone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none transition-all"
+            style={{
+              background: theme.secondary,
+              borderColor: theme.muted,
+              color: theme.text
+            }}
           />
         </div>
         <div className="flex gap-2">
           <div className="relative">
-             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" size={16} style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-            <select 
-                value={filterStatus} 
-                onChange={(e) => setFilterStatus(e.target.value)} 
-                className="pl-10 pr-8 py-2 rounded-lg border outline-none transition-all appearance-none cursor-pointer" 
-                style={{ 
-                background: isDark ? COLORS.dark.secondary : COLORS.light.secondary, 
-                borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, 
-                color: isDark ? COLORS.dark.text : COLORS.light.text 
-                }}
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" size={16} style={{ color: theme.muted }} />
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="pl-10 pr-8 py-2 rounded-lg border outline-none transition-all appearance-none cursor-pointer"
+              style={{
+                background: theme.secondary,
+                borderColor: theme.muted,
+                color: theme.text
+              }}
             >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
         </div>
@@ -111,33 +92,33 @@ const AppointmentQueue = ({ isDark, appointments, onStatusChange }) => {
       {/* Status Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Object.entries(appointmentsByStatus).map(([status, apts]) => (
-          <div key={status} className="rounded-xl p-4 border-2" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: getStatusColor(status) }}>
+          <div key={status} className="rounded-xl p-4 border-2" style={{ background: theme.cardBg, borderColor: getStatusColor(status) }}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium capitalize" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>{status}</span>
+              <span className="text-sm font-medium capitalize" style={{ color: theme.text }}>{status}</span>
               <div style={{ color: getStatusColor(status) }}>{status === 'cancelled' ? <XCircle size={16} /> : <AlertCircle size={16} />}</div>
             </div>
-            <p className="text-2xl font-bold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{apts.length}</p>
+            <p className="text-2xl font-bold" style={{ color: theme.text }}>{apts.length}</p>
           </div>
         ))}
       </div>
 
       {/* Appointment List */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {filteredAppointments.length === 0 ? (
-          <div className="rounded-xl p-8 text-center border-2" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-            <p style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>No appointments found matching your criteria.</p>
+          <div className="col-span-full rounded-xl p-8 text-center border-2" style={{ background: theme.cardBg, borderColor: theme.text }}>
+            <p style={{ color: theme.text }}>No appointments found matching your criteria.</p>
           </div>
         ) : (
           filteredAppointments.map((appointment) => (
-            <div key={appointment.id} className="rounded-xl p-6 border-2 transition-all hover:shadow-lg" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: getStatusColor(appointment.status) }}>
-              <div className="flex flex-col lg:flex-row justify-between gap-4">
+            <div key={appointment.id} className="rounded-xl p-6 border-2 transition-all hover:shadow-lg" style={{ background: theme.cardBg, borderColor: getStatusColor(appointment.status) }}>
+              <div className="flex flex-col gap-4">
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <h3 className="text-lg font-bold mb-1" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
-                        {appointment.patient_name || 'Unknown Patient'}
+                      <h3 className="text-lg font-bold mb-1" style={{ color: theme.text }}>
+                        <HighlightedText text={appointment.patient_name || 'Unknown Patient'} highlight={searchTerm} theme={theme} />
                       </h3>
-                      <p className="text-sm" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+                      <p className="text-sm" style={{ color: theme.text }}>
                         Patient ID: {appointment.patient_id} • Appointment ID: {appointment.id}
                       </p>
                     </div>
@@ -149,52 +130,52 @@ const AppointmentQueue = ({ isDark, appointments, onStatusChange }) => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                     <div className="flex items-center gap-2">
-                      <Clock size={16} style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-                      <span className="text-sm" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
+                      <Clock size={16} style={{ color: theme.text }} />
+                      <span className="text-sm" style={{ color: theme.text }}>
                         {appointment.start_datetime ? new Date(appointment.start_datetime).toLocaleDateString() : 'N/A'} • {appointment.start_datetime ? formatDateTime(appointment.start_datetime).time : 'N/A'} - {appointment.end_datetime ? formatDateTime(appointment.end_datetime).time : 'N/A'} ({appointment.start_datetime && appointment.end_datetime ? calculateDuration(appointment.start_datetime, appointment.end_datetime) : 0} min)
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Phone size={16} style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-                      <span className="text-sm" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
+                      <Phone size={16} style={{ color: theme.text }} />
+                      <span className="text-sm" style={{ color: theme.text }}>
                         {appointment.patient_phone || 'N/A'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Mail size={16} style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
-                      <span className="text-sm" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
+                      <Mail size={16} style={{ color: theme.text }} />
+                      <span className="text-sm" style={{ color: theme.text }}>
                         {appointment.patient_email || 'N/A'}
                       </span>
                     </div>
                   </div>
 
                   {appointment.notes && (
-                    <div className="mt-2 p-3 rounded-lg" style={{ background: isDark ? COLORS.dark.secondary : COLORS.light.secondary }}>
-                      <p className="text-sm" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
+                    <div className="mt-2 p-3 rounded-lg" style={{ background: theme.secondary }}>
+                      <p className="text-sm" style={{ color: theme.text }}>
                         <strong>Notes:</strong> {appointment.notes}
                       </p>
                     </div>
                   )}
                   {appointment.cancellation_reason && (
-                    <div className="mt-2 p-3 rounded-lg" style={{ background: '#EF444420' }}>
-                      <p className="text-sm" style={{ color: '#EF4444' }}>
+                    <div className="mt-2 p-3 rounded-lg" style={{ background: theme.error }}>
+                      <p className="text-sm" style={{ color: theme.text }}>
                         <strong>Cancellation Reason:</strong> {appointment.cancellation_reason}
                       </p>
                     </div>
                   )}
                 </div>
 
-                <div className="flex flex-col gap-2 lg:min-w-[200px]">
+                <div className="flex flex-wrap gap-2 mt-auto">
                   {appointment.status === 'pending' && (
                     <>
-                      <button onClick={() => onStatusChange(appointment.id, 'confirmed')} className="px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105" style={{ background: '#10B981' }}>Confirm</button>
-                      <button onClick={() => onStatusChange(appointment.id, 'cancelled')} className="px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105" style={{ background: isDark ? COLORS.dark.secondary : COLORS.light.secondary, color: '#EF4444' }}>Cancel</button>
+                      <button onClick={() => onStatusChange(appointment.id, 'confirmed')} className="flex-1 px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105" style={{ background: '#10B981' }}>Confirm</button>
+                      <button onClick={() => onStatusChange(appointment.id, 'cancelled')} className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105" style={{ background: theme.secondary, color: '#EF4444' }}>Cancel</button>
                     </>
                   )}
                   {appointment.status === 'confirmed' && (
-                    <button onClick={() => onStatusChange(appointment.id, 'completed')} className="px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105" style={{ background: '#6366F1' }}>Mark Complete</button>
+                    <button onClick={() => onStatusChange(appointment.id, 'completed')} className="flex-1 px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105" style={{ background: '#6366F1' }}>Mark Complete</button>
                   )}
-                  <button className="px-4 py-2 rounded-lg border font-semibold transition-all hover:scale-105" style={{ background: 'transparent', borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, color: isDark ? COLORS.dark.text : COLORS.light.text }}>View Details</button>
+                  <button className="flex-1 px-4 py-2 rounded-lg border font-semibold transition-all hover:scale-105" style={{ background: 'transparent', borderColor: theme.muted, color: theme.text }}>View Details</button>
                 </div>
               </div>
             </div>

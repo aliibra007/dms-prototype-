@@ -6,7 +6,7 @@ import InvoicesTab from "./tabs/InvoicesTab";
 import PaymentsTab from "./tabs/PaymentsTab";
 import CreateInvoiceModal from "./CreateInvoiceModal";
 import { COLORS } from "../styles/theme";
-
+import DemoModeBanner from "../components/shared/DemoModeBanner";
 const Finance = ({ isDark }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
@@ -72,25 +72,10 @@ const Finance = ({ isDark }) => {
   return (
     <div className="space-y-6">
       {usingMockData && showMockWarning && (
-        <div
-          className="rounded-lg p-3 flex items-center gap-3 shrink-0 border relative animate-fade-in"
-          style={{
-            background: `${theme.warning}25`,
-            borderColor: `${theme.warning}40`
-          }}
-        >
-          <AlertTriangle size={20} style={{ color: theme.warning }} />
-          <p className="text-sm font-medium flex-1" style={{ color: theme.text }}>
-            <span className="font-bold">Demo Mode:</span> Using mock data. Backend API is not available. Update <code className="px-1 rounded" style={{ background: `${theme.warning}40` }}>VITE_API_BASE_URL</code> in your .env file.
-          </p>
-          <button
-            onClick={() => setShowMockWarning(false)}
-            className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-            style={{ color: theme.muted }}
-          >
-            <X size={16} />
-          </button>
-        </div>
+        <DemoModeBanner
+          theme={theme}
+          onClose={() => setShowMockWarning(false)}
+        />
       )}
 
       {showTip && (
@@ -188,10 +173,10 @@ const TabButton = ({ tab, activeTab, setActiveTab, isDark, colors }) => (
   <button
     onClick={() => setActiveTab(tab.id)}
     className={`px-4 py-2 rounded-lg font-semibold transition-all ${activeTab === tab.id
-        ? "text-white"
-        : isDark
-          ? "text-gray-400 hover:text-white"
-          : "text-gray-600 hover:text-gray-900"
+      ? "text-white"
+      : isDark
+        ? "text-gray-400 hover:text-white"
+        : "text-gray-600 hover:text-gray-900"
       }`}
     style={{
       background:

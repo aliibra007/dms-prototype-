@@ -88,8 +88,8 @@ export default function PrescriptionForm({
         </h3>
         <button
           onClick={onClose}
-          className="p-2 rounded-full hover:bg-opacity-10 transition-colors"
-          style={{ color: theme.muted }}
+          className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+          style={{ color: theme.text }}
         >
           <X size={24} />
         </button>

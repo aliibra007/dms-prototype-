@@ -80,7 +80,7 @@ export default function MedicalHistoryTimeline({
 
                   {record.attachments.length > 0 && (
                     <div className="mt-5 pt-4 border-t" style={{ borderColor: theme.border }}>
-                      <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: theme.muted }}>Attachments</p>
+                      <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: theme.text }}>Attachments</p>
                       <div className="flex flex-wrap gap-3">
                         {record.attachments.map((file, idx) => (
                           <div
@@ -89,7 +89,7 @@ export default function MedicalHistoryTimeline({
                             className="flex items-center gap-3 px-3 py-2 rounded-lg border group cursor-pointer hover:border-blue-500 transition-colors"
                             style={{ borderColor: theme.border, background: isDark ? theme.secondary : '#F3F4F6' }}
                           >
-                            <Paperclip size={16} style={{ color: theme.muted }} />
+                            <Paperclip size={16} style={{ color: theme.text }} />
                             <span className="text-sm font-medium" style={{ color: theme.text }}>{file}</span>
                             <div className="flex gap-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button className="p-1 hover:text-blue-500" title="View"><Eye size={14} /></button>

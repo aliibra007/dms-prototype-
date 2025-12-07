@@ -1,49 +1,22 @@
 import React, { useState } from 'react';
-import { 
-  format, 
-  addMonths, 
-  subMonths, 
-  startOfMonth, 
-  endOfMonth, 
-  startOfWeek, 
-  endOfWeek, 
-  eachDayOfInterval, 
-  isSameMonth, 
-  isSameDay, 
-  isBefore, 
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+  isBefore,
   startOfDay,
   isToday
 } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const COLORS = {
-  light: {
-    primary: 'hsl(262, 52%, 47%)',
-    secondary: 'hsl(220, 25%, 95%)',
-    accent: 'hsl(199, 89%, 48%)',
-    muted: 'hsl(240, 10%, 85%)',
-    background: '#FFFFFF',
-    text: '#1F2937',
-    cardBg: '#FFFFFF',
-    danger: '#EF4444',
-    success: '#10B981',
-    warning: '#F59E0B',
-    disabled: '#9CA3AF',
-  },
-  dark: {
-    primary: 'hsl(262, 45%, 65%)',
-    secondary: 'hsl(220, 20%, 12%)',
-    accent: 'hsl(199, 80%, 55%)',
-    muted: 'hsl(240, 8%, 35%)',
-    background: '#0F172A',
-    text: '#F1F5F9',
-    cardBg: '#1E293B',
-    danger: '#EF4444',
-    success: '#10B981',
-    warning: '#F59E0B',
-    disabled: '#4B5563',
-  },
-};
+import { COLORS } from '../../../styles/theme';
 
 const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], offDays = [] }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -83,16 +56,17 @@ const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], o
     let cursor = 'cursor-pointer';
     let border = 'border-transparent';
 
+    //FIXME: fix the past days month colors or changed color
     if (!isCurrentMonth) {
       text = isDark ? COLORS.dark.muted : COLORS.light.muted;
     }
 
     if (isPast) {
-      text = isDark ? COLORS.dark.disabled : COLORS.light.disabled;
+      text = isDark ? COLORS.dark.muted : COLORS.light.muted;
       cursor = 'cursor-not-allowed';
       if (isSelected) {
-         bg = isDark ? COLORS.dark.muted : COLORS.light.muted;
-         text = '#FFFFFF';
+        bg = isDark ? COLORS.dark.muted : COLORS.light.muted;
+        text = '#FFFFFF';
       }
     } else if (isOff) {
       text = COLORS.light.danger;
@@ -109,22 +83,22 @@ const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], o
     }
 
     if (isTodayDate && !isSelected) {
-        border = `border-2 border-${isDark ? 'white' : 'black'}`;
+      border = `border-2 border-${isDark ? 'white' : 'black'}`;
     }
 
     return { bg, text, cursor, border, isPast, isOff, hasApts };
   };
 
   return (
-    <div className="rounded-xl p-6 border-2" style={{ 
-      background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, 
-      borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary 
+    <div className="rounded-xl p-6 border-2" style={{
+      background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg,
+      borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary
     }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <button 
-          onClick={prevMonth} 
-          className="p-2 rounded-lg transition-all hover:scale-110" 
+        <button
+          onClick={prevMonth}
+          className="p-2 rounded-lg transition-all hover:scale-110"
           style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`, color: isDark ? COLORS.dark.primary : COLORS.light.primary }}
         >
           <ChevronLeft size={20} />
@@ -132,9 +106,9 @@ const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], o
         <h3 className="text-lg font-bold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
           {format(currentMonth, 'MMMM yyyy')}
         </h3>
-        <button 
-          onClick={nextMonth} 
-          className="p-2 rounded-lg transition-all hover:scale-110" 
+        <button
+          onClick={nextMonth}
+          className="p-2 rounded-lg transition-all hover:scale-110"
           style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`, color: isDark ? COLORS.dark.primary : COLORS.light.primary }}
         >
           <ChevronRight size={20} />
@@ -154,9 +128,9 @@ const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], o
       <div className="grid grid-cols-7 gap-1">
         {calendarDays.map((day, dayIdx) => {
           const { bg, text, cursor, border, isPast, isOff, hasApts } = getDayStyle(day);
-          
+
           return (
-            <div 
+            <div
               key={day.toString()}
               onClick={() => !isPast && onDateSelect(day)}
               className={`
@@ -165,8 +139,8 @@ const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], o
                 ${!isPast && !isOff && !isSameDay(day, selectedDate) ? 'hover:bg-purple-600 hover:text-white' : ''}
                 ${hasApts && !isSameDay(day, selectedDate) && !isOff ? 'border-2 border-green-500' : ''}
               `}
-              style={{ 
-                backgroundColor: bg, 
+              style={{
+                backgroundColor: bg,
                 color: text,
               }}
             >
@@ -179,9 +153,9 @@ const CalendarView = ({ isDark, selectedDate, onDateSelect, appointments = [], o
           );
         })}
       </div>
-      
+
       {/* Legend */}
-      <div className="mt-6 flex flex-wrap gap-4 text-xs justify-center" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+      <div className="mt-6 flex flex-wrap gap-4 text-xs justify-center" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded-full bg-green-500"></div>
           <span>Appointment</span>

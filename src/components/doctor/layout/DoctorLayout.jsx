@@ -23,6 +23,19 @@ import '../styles/App.css';
 import '../styles/doctor.css';
 import { COLORS } from '../styles/theme';
 
+// Helper function to convert HEX to RGBA with opacity
+function hexToRgba(hex, opacity = 1) {
+  // Remove # if present
+  hex = hex.replace('#', '');
+
+  // Parse RGB values
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+}
+
 function AnimatedBackground({ isDark }) {
   const particleColor = isDark ? COLORS.dark.primary : COLORS.light.primary;
   
@@ -83,6 +96,42 @@ function AnimatedBackground({ isDark }) {
           }}
         />
       ))}
+
+      <div className="wave-container" style={{
+        opacity: 0.06,
+        height: '120px',
+        maskImage: 'linear-gradient(to top, black 0%, black 60%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to top, black 0%, black 60%, transparent 100%)'
+      }}>
+        <div
+          className="wave wave1"
+          style={{
+            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.2)} 50%, transparent 100%)`,
+          }}
+        />
+        <div
+          className="wave wave2"
+          style={{
+            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.15)} 50%, transparent 100%)`,
+          }}
+        />
+        <div
+          className="wave wave3"
+          style={{
+            background: `linear-gradient(90deg, transparent 0%, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.1)} 50%, transparent 100%)`,
+          }}
+        />
+      </div>
+
+      <div className="orb orb1" style={{ background: isDark ? COLORS.dark.primary : COLORS.light.primary }} />
+      <div className="orb orb2" style={{ background: isDark ? COLORS.dark.accent : COLORS.light.accent }} />
+      <div className="orb orb3" style={{ background: isDark ? COLORS.dark.primary : COLORS.light.primary }} />
+
+      <div className="geometric-shape circle" style={{ border: `3px solid ${isDark ? COLORS.dark.accent : COLORS.light.accent}` }} />
+      <div className="geometric-shape square" style={{ border: `3px solid ${isDark ? COLORS.dark.primary : COLORS.light.primary}` }} />
+      <div className="geometric-shape triangle" style={{ borderBottom: `86px solid ${isDark ? COLORS.dark.accent : COLORS.light.accent}` }} />
+
+      <div className="radial-pulse" style={{ background: `radial-gradient(circle, ${hexToRgba(isDark ? COLORS.dark.primary : COLORS.light.primary, 0.2)}, transparent)` }} />
     </div>
   );
 }
@@ -101,7 +150,7 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
   });
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   const handleToggleTheme = () => {
@@ -136,10 +185,10 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
           <button onClick={handleToggleTheme} className="p-2 rounded-lg transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.primary : COLORS.light.primary}20`, color: isDark ? COLORS.dark.primary : COLORS.light.primary }}>
             {isDark ? <Sun size={20} /> : <Moon size={20} />}
           </button>
-          <div className="relative">
+          <div className="relative" onMouseLeave={() => setShowNotifications(false)}>
             <button onClick={() => setShowNotifications((p) => !p)} className="p-2 rounded-lg relative transition-all hover:scale-110" style={{ background: `${isDark ? COLORS.dark.accent : COLORS.light.accent}20`, color: isDark ? COLORS.dark.accent : COLORS.light.accent }}>
               <Bell size={20} />
-              {unreadCount > 0 && <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ background: '#EF4444' }} />}
+              {unreadCount > 0 && !showNotifications && <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ background: '#EF4444' }} />}
             </button>
             {showNotifications && (
               <div className="absolute right-0 mt-2 w-80 rounded-lg shadow-2xl border overflow-hidden animate-fade-in" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
@@ -148,29 +197,28 @@ function Navbar({ toggleSidebar, isDark, toggleTheme }) {
                   {notifications.map((n) => (
                     <div key={n.id} className="px-4 py-3 border-b hover:bg-opacity-50 cursor-pointer transition-all" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted, background: n.unread ? `${isDark ? COLORS.dark.accent : COLORS.light.accent}10` : 'transparent', color: isDark ? COLORS.dark.text : COLORS.light.text }}>
                       <p className="text-sm">{n.text}</p>
-                      <p className="text-xs mt-1" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>{n.time}</p>
+                      <p className="text-xs mt-1" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{n.time}</p>
                     </div>
                   ))}
                 </div>
               </div>
             )}
           </div>
-          <div className="relative">
+          <div className="relative" onMouseLeave={() => setShowProfile(false)}>
             <button onClick={() => setShowProfile((p) => !p)} className="flex items-center gap-2 p-2 rounded-lg transition-all hover:scale-105" style={{ background: isDark ? `${COLORS.dark.primary}20` : `${COLORS.light.primary}15` }}>
               <img src={userProfile.avatar} alt="Profile" className="w-8 h-8 rounded-full" />
               <div className="hidden md:block text-left">
                 <p className="text-sm font-semibold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{userProfile.name}</p>
                 <p className="text-xs" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>{userProfile.role}</p>
               </div>
-              <ChevronDown size={16} style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }} />
             </button>
             {showProfile && (
-              <div className="absolute right-0 mt-2 w-56 rounded-lg shadow-2xl border overflow-hidden animate-fade-in" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+              <div className="absolute right-0 mt-2 w-full rounded-lg shadow-2xl border overflow-hidden animate-fade-in" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
                 <Link to="/doctor/profile" className="flex items-center gap-3 px-4 py-3 transition-all" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>
                   <User size={18} />
                   <span>Edit Profile</span>
                 </Link>
-                <button onClick={() => {}} className="w-full flex items-center gap-3 px-4 py-3 border-t transition-all" style={{ color: '#EF4444', borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+                <button onClick={() => { }} className="w-full flex items-center gap-3 px-4 py-3 border-t transition-all" style={{ color: '#EF4444', borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
                   <LogOut size={18} />
                   <span>Logout</span>
                 </button>
@@ -199,7 +247,7 @@ function Sidebar({ isOpen, isDark, onClose }) {
     <>
       {/* Backdrop overlay for mobile */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-20 md:hidden transition-opacity duration-300"
           onClick={onClose}
           style={{ top: '4rem' }}
@@ -214,9 +262,9 @@ function Sidebar({ isOpen, isDark, onClose }) {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               return (
-                <Link 
-                  key={item.path} 
-                  to={item.path} 
+                <Link
+                  key={item.path}
+                  to={item.path}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group"
                   onClick={() => {
                     // Close sidebar on mobile when a link is clicked
@@ -256,21 +304,21 @@ export default function DoctorLayout() {
     const checkMobile = () => {
       const nowMobile = window.innerWidth < 768;
       const wasMobile = prevMobileRef.current;
-      
+
       // Only auto-open sidebar when transitioning from mobile to desktop
       if (wasMobile && !nowMobile) {
         setIsSidebarOpen(true);
       }
-      
+
       prevMobileRef.current = nowMobile;
       setIsMobile(nowMobile);
     };
-    
+
     // Set initial mobile state
     const initialMobile = window.innerWidth < 768;
     prevMobileRef.current = initialMobile;
     setIsMobile(initialMobile);
-    
+
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -288,10 +336,9 @@ export default function DoctorLayout() {
       <AnimatedBackground isDark={isDark} />
       <Navbar toggleSidebar={toggleSidebar} isDark={isDark} toggleTheme={() => setIsDark((p) => !p)} />
       <Sidebar isOpen={isSidebarOpen} isDark={isDark} onClose={closeSidebar} />
-      <main className="pt-20 px-4 lg:px-8 pb-10 relative z-10 transition-all duration-300" style={{ 
+      <main className="pt-20 px-4 lg:px-8 pb-10 relative z-10 transition-all duration-300" style={{
         // Only apply padding on desktop (md and above), not on mobile
         paddingLeft: isMobile ? '1rem' : (isSidebarOpen ? 'calc(260px + 2rem)' : '1rem'),
-        background: 'transparent'
       }}>
         <Outlet context={{ isDark }} />
       </main>

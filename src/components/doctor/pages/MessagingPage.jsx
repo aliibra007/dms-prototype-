@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { COLORS } from '../styles/theme';
 import ContactList from '../components/messaging/ContactList';
@@ -11,7 +11,7 @@ const MOCK_CONTACTS = [
     name: 'Dr. Emily Chen',
     role: 'Doctor',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emily',
-    lastMessage: 'Can you review the patient file?',
+    lastMessage: 'Shared a patient profile',
     lastMessageTime: '10:30 AM',
     online: true,
     phone: '+1234567890',
@@ -21,7 +21,7 @@ const MOCK_CONTACTS = [
     name: 'Sarah Wilson',
     role: 'Secretary',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-    lastMessage: 'Appointment rescheduled to 2 PM',
+    lastMessage: 'Schedule updated for tomorrow',
     lastMessageTime: 'Yesterday',
     online: true,
     phone: '+1234567891',
@@ -31,7 +31,7 @@ const MOCK_CONTACTS = [
     name: 'James Rodriguez',
     role: 'Patient',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
-    lastMessage: 'Thank you doctor!',
+    lastMessage: 'Thank you for the prescription',
     lastMessageTime: '2 days ago',
     online: false,
     phone: '+1234567892',
@@ -41,7 +41,7 @@ const MOCK_CONTACTS = [
     name: 'Dr. Michael Chang',
     role: 'Doctor',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Michael',
-    lastMessage: 'See you at the conference',
+    lastMessage: 'Conference details attached',
     lastMessageTime: '1 week ago',
     online: false,
     phone: '+1234567893',
@@ -50,18 +50,25 @@ const MOCK_CONTACTS = [
 
 const MOCK_MESSAGES = {
   1: [
-    { id: 1, content: 'Hi Dr. Chen, how are you?', senderName: 'Me', senderRole: 'Doctor', isOwn: true, timestamp: '10:00 AM' },
-    { id: 2, content: 'I am good, thanks! Can you review the patient file?', senderName: 'Dr. Emily Chen', senderRole: 'Doctor', isOwn: false, timestamp: '10:30 AM' },
+    { id: 1, type: 'text', content: 'Hi Dr. Chen, could you take a look at the lab results for John Doe?', senderName: 'Me', senderRole: 'Doctor', isOwn: true, timestamp: '10:00 AM' },
+    { id: 2, type: 'text', content: 'Sure, send them over.', senderName: 'Dr. Emily Chen', senderRole: 'Doctor', isOwn: false, timestamp: '10:05 AM' },
+    { id: 3, type: 'file', content: { name: 'Lab_Results_JD.pdf', size: 2500000, type: 'application/pdf' }, senderName: 'Me', senderRole: 'Doctor', isOwn: true, timestamp: '10:06 AM' },
+    { id: 4, type: 'text', content: 'Thanks! I also think he might need a follow-up for his hypertension.', senderName: 'Dr. Emily Chen', senderRole: 'Doctor', isOwn: false, timestamp: '10:25 AM' },
+    { id: 5, type: 'patient', content: { id: 101, name: "John Doe", age: 45, condition: "Hypertension", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=John" }, senderName: 'Dr. Emily Chen', senderRole: 'Doctor', isOwn: false, timestamp: '10:30 AM' },
   ],
   2: [
-    { id: 1, content: 'Hi Sarah, any updates on the schedule?', senderName: 'Me', senderRole: 'Doctor', isOwn: true, timestamp: 'Yesterday' },
-    { id: 2, content: 'Appointment rescheduled to 2 PM', senderName: 'Sarah Wilson', senderRole: 'Secretary', isOwn: false, timestamp: 'Yesterday' },
+    { id: 1, type: 'text', content: 'Hi Sarah, did we reschedule Mrs. Smith?', senderName: 'Me', senderRole: 'Doctor', isOwn: true, timestamp: 'Yesterday' },
+    { id: 2, type: 'text', content: 'Yes, she is moved to next Tuesday at 2 PM.', senderName: 'Sarah Wilson', senderRole: 'Secretary', isOwn: false, timestamp: 'Yesterday' },
+    { id: 3, type: 'text', content: 'Schedule updated for tomorrow as well.', senderName: 'Sarah Wilson', senderRole: 'Secretary', isOwn: false, timestamp: 'Yesterday' },
   ],
   3: [
-    { id: 1, content: 'Thank you doctor!', senderName: 'James Rodriguez', senderRole: 'Patient', isOwn: false, timestamp: '2 days ago' },
+    { id: 1, type: 'text', content: 'Good morning Dr., I am feeling much better.', senderName: 'James Rodriguez', senderRole: 'Patient', isOwn: false, timestamp: '2 days ago' },
+    { id: 2, type: 'text', content: 'Glad to hear that James. Keep taking the meds.', senderName: 'Me', senderRole: 'Doctor', isOwn: true, timestamp: '2 days ago' },
+    { id: 3, type: 'text', content: 'Thank you for the prescription', senderName: 'James Rodriguez', senderRole: 'Patient', isOwn: false, timestamp: '2 days ago' },
   ],
   4: [
-    { id: 1, content: 'See you at the conference', senderName: 'Dr. Michael Chang', senderRole: 'Doctor', isOwn: false, timestamp: '1 week ago' },
+    { id: 1, type: 'text', content: 'Here are the details for the upcoming cardiology conference.', senderName: 'Dr. Michael Chang', senderRole: 'Doctor', isOwn: false, timestamp: '1 week ago' },
+    { id: 2, type: 'file', content: { name: 'Conference_Schedule.pdf', size: 1200000, type: 'application/pdf' }, senderName: 'Dr. Michael Chang', senderRole: 'Doctor', isOwn: false, timestamp: '1 week ago' },
   ],
 };
 
@@ -69,17 +76,30 @@ export default function MessagingPage() {
   const { isDark } = useOutletContext();
   const [selectedContact, setSelectedContact] = useState(null);
   const [messages, setMessages] = useState(MOCK_MESSAGES);
+  const [contacts, setContacts] = useState(MOCK_CONTACTS);
+  const [wallpaperColor, setWallpaperColor] = useState('transparent');
 
-  const handleSendMessage = (content) => {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setSelectedContact(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const handleSendMessage = (messageData) => {
     if (!selectedContact) return;
 
     const newMessage = {
       id: Date.now(),
-      content,
+      type: messageData.type,
+      content: messageData.content,
       senderName: 'Me',
       senderRole: 'Doctor',
       isOwn: true,
-      timestamp: 'Just now',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
     setMessages(prev => ({
@@ -88,11 +108,40 @@ export default function MessagingPage() {
     }));
   };
 
+  const handleClearChat = () => {
+    if (!selectedContact) return;
+    setMessages(prev => ({
+      ...prev,
+      [selectedContact.id]: []
+    }));
+  };
+
+  const handleBlockUser = () => {
+    if (!selectedContact) return;
+    alert(`Blocked ${selectedContact.name}`);
+    setContacts(prev => prev.filter(c => c.id !== selectedContact.id));
+    setSelectedContact(null);
+  };
+
+  const handleDeleteContact = () => {
+    if (!selectedContact) return;
+    if (window.confirm(`Delete chat with ${selectedContact.name}?`)) {
+      setContacts(prev => prev.filter(c => c.id !== selectedContact.id));
+      setSelectedContact(null);
+    }
+  };
+
+  // NOTE: check this one 
   return (
     <>
       {/* TRANSPARENCY: Change opacity values to adjust main container (00=fully transparent, ff=fully opaque) */}
-      <div className="h-[calc(100vh-8rem)] rounded-xl shadow-lg border-2 overflow-hidden flex backdrop-blur-sm"
-        style={{
+      <div
+      className="h-[calc(100vh-8rem)] rounded-xl shadow-lg border-2 overflow-hidden flex backdrop-blur-sm"
+        onContextMenu={(e) => {
+        e.preventDefault();
+        setSelectedContact(null);
+      }}
+      style={{
           background: isDark ? `${COLORS.dark.cardBg}66` : `${COLORS.light.cardBg}33`,
           borderColor: isDark ? COLORS.dark.primary : COLORS.light.primary,
         }}
@@ -100,7 +149,7 @@ export default function MessagingPage() {
       {/* Sidebar - Hidden on mobile when chat is open */}
       <div className={`w-full md:w-80 flex-shrink-0 ${selectedContact ? 'hidden md:block' : 'block'}`}>
         <ContactList
-          contacts={MOCK_CONTACTS}
+          contacts={contacts}
           selectedContactId={selectedContact?.id}
           onSelectContact={setSelectedContact}
           isDark={isDark}
@@ -125,6 +174,11 @@ export default function MessagingPage() {
           messages={selectedContact ? (messages[selectedContact.id] || []) : []}
           onSendMessage={handleSendMessage}
           isDark={isDark}
+          wallpaperColor={wallpaperColor}
+          onChangeWallpaper={setWallpaperColor}
+          onClearChat={handleClearChat}
+          onBlockUser={handleBlockUser}
+          onDeleteContact={handleDeleteContact}
         />
       </div>
     </div>

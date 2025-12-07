@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { X, Calendar, User, DollarSign, FileText, Search } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Calendar, User, DollarSign, FileText, Search, Plus } from "lucide-react";
+import { COLORS } from "../styles/theme";
 
 const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
+  const theme = isDark ? COLORS.dark : COLORS.light;
   const [formData, setFormData] = useState({
     patient_id: "",
     amount: "",
@@ -9,6 +12,8 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
     description: "",
   });
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const MOCK_PATIENTS = [
     { id: 101, name: "John Doe" },
@@ -18,7 +23,15 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
     { id: 105, name: "Emily Carter" },
   ];
 
+  const filteredPatients = MOCK_PATIENTS.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
+  const handleSelectPatient = (patient) => {
+    setFormData({ ...formData, patient_id: patient.id });
+    setSearchTerm(patient.name);
+    setIsDropdownOpen(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +45,7 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
       });
       onClose();
       setFormData({ patient_id: "", amount: "", due_date: "", description: "" });
+      setSearchTerm("");
     } catch (error) {
       alert("Failed to create invoice: " + error.message);
     } finally {
@@ -39,121 +53,199 @@ const CreateInvoiceModal = ({ isOpen, onClose, onCreate, isDark }) => {
     }
   };
 
-  const inputStyle = {
-    background: isDark ? "#1E293B" : "#F9FAFB",
-    borderColor: isDark ? "#334155" : "#D1D5DB",
-    color: isDark ? "#F1F5F9" : "#1F2937",
-  };
-
-  const labelStyle = { color: isDark ? "#94A3B8" : "#4B5563" };
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const filteredPatients = MOCK_PATIENTS.filter(p =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleSelectPatient = (patient) => {
-    setFormData({ ...formData, patient_id: patient.id });
-    setSearchTerm(patient.name);
-    setIsDropdownOpen(false);
-  };
-
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-xl shadow-2xl p-6 m-4" style={{ background: isDark ? "#0F172A" : "#FFFFFF", border: `1px solid ${isDark ? "#334155" : "#E5E7EB"}` }}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold" style={{ color: isDark ? "#F1F5F9" : "#1F2937" }}>
-            Create New Invoice
-          </h2>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" style={{ color: isDark ? "#94A3B8" : "#6B7280" }}>
-            <X size={20} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative">
-            <label className="block text-sm font-medium mb-1" style={labelStyle}>Patient</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: isDark ? "#94A3B8" : "#9CA3AF" }} />
-              <input
-                type="text"
-                required
-                placeholder="Search patient..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setIsDropdownOpen(true);
-                  setFormData({ ...formData, patient_id: "" }); // Reset ID on change
-                }}
-                onFocus={() => setIsDropdownOpen(true)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                style={inputStyle}
-              />
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="w-full max-w-lg rounded-2xl shadow-2xl m-4 border relative overflow-hidden"
+            style={{ background: theme.cardBg, borderColor: theme.border }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: theme.border }}>
+              <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: theme.text }}>
+                <div className="p-2 rounded-lg" style={{ background: `${theme.primary}20` }}>
+                  <Plus size={20} style={{ color: theme.primary }} />
+                </div>
+                Create New Invoice
+              </h2>
+              <button
+                onClick={onClose}
+                className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                style={{ color: theme.text }}
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            {isDropdownOpen && searchTerm && (
-              <div className="absolute z-10 w-full mt-1 rounded-lg border shadow-lg max-h-48 overflow-y-auto"
-                style={{ background: isDark ? "#1E293B" : "#FFFFFF", borderColor: isDark ? "#334155" : "#E5E7EB" }}>
-                {filteredPatients.length > 0 ? (
-                  filteredPatients.map((p) => (
-                    <div
-                      key={p.id}
-                      onClick={() => handleSelectPatient(p)}
-                      className="px-4 py-2 cursor-pointer hover:bg-opacity-10 transition-colors"
-                      style={{
-                        color: isDark ? "#F1F5F9" : "#1F2937",
-                        background: isDark ? "hover:rgba(255,255,255,0.05)" : "hover:rgba(0,0,0,0.05)"
-                      }}
-                    >
-                      {p.name}
+            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+              {/* Patient Search */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold" style={{ color: theme.text }}>Patient</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: theme.muted }} />
+                  <input
+                    type="text"
+                    required
+                    placeholder="Search patient..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setIsDropdownOpen(true);
+                      setFormData({ ...formData, patient_id: "" });
+                    }}
+                    onFocus={() => setIsDropdownOpen(true)}
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border bg-transparent outline-none focus:ring-2 transition-all"
+                    style={{
+                      borderColor: theme.border,
+                      color: theme.text,
+                      '--tw-ring-color': theme.primary
+                    }}
+                  />
+                  {isDropdownOpen && searchTerm && (
+                    <div className="absolute z-10 w-full mt-2 rounded-xl border shadow-xl max-h-48 overflow-y-auto"
+                      style={{ background: theme.cardBg, borderColor: theme.border }}>
+                      {filteredPatients.length > 0 ? (
+                        filteredPatients.map((p) => (
+                          <div
+                            key={p.id}
+                            onClick={() => handleSelectPatient(p)}
+                            className="px-4 py-3 cursor-pointer transition-colors flex items-center gap-3"
+                            style={{
+                              borderBottom: `1px solid ${theme.border}`,
+                              color: theme.text
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.background = isDark ? theme.secondary : '#F3F4F6'}
+                            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                          >
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                              style={{ background: `${theme.primary}20`, color: theme.primary }}>
+                              {p.name.charAt(0)}
+                            </div>
+                            {p.name}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-4 py-3 text-sm opacity-70" style={{ color: theme.text }}>
+                          No patients found
+                        </div>
+                      )}
                     </div>
-                  ))
-                ) : (
-                  <div className="px-4 py-2 text-sm" style={{ color: isDark ? "#94A3B8" : "#6B7280" }}>
-                    No patients found
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            )}
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1" style={labelStyle}>Amount ($)</label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: isDark ? "#94A3B8" : "#9CA3AF" }} />
-              <input required type="number" min="0" step="0.01" placeholder="0.00" value={formData.amount} onChange={(e) => setFormData({ ...formData, amount: e.target.value })} className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 transition-all" style={inputStyle} />
-            </div>
-          </div>
+              <div className="grid grid-cols-2 gap-5">
+                {/* Amount */}
+                <div className="space-y-2">
+                  <label className="text-sm font-bold" style={{ color: theme.text }}>Amount ($)</label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: theme.muted }} />
+                    <input
+                      required
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={formData.amount}
+                      onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border bg-transparent outline-none focus:ring-2 transition-all appearance-none"
+                      style={{
+                        borderColor: theme.border,
+                        color: theme.text,
+                        '--tw-ring-color': theme.primary
+                      }}
+                    />
+                    <style jsx>{`
+                      input[type=number]::-webkit-inner-spin-button, 
+                      input[type=number]::-webkit-outer-spin-button { 
+                        -webkit-appearance: none; 
+                        margin: 0; 
+                      }
+                      input[type=number] {
+                        -moz-appearance: textfield;
+                      }
+                    `}</style>
+                  </div>
+                </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1" style={labelStyle}>Due Date</label>
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: isDark ? "#94A3B8" : "#9CA3AF" }} />
-              <input required type="date" value={formData.due_date} onChange={(e) => setFormData({ ...formData, due_date: e.target.value })} className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 transition-all" style={inputStyle} />
-            </div>
-          </div>
+                {/* Due Date */}
+                <div className="space-y-2">
+                  <label className="text-sm font-bold" style={{ color: theme.text }}>Due Date</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2" size={18} style={{ color: theme.muted }} />
+                    <input
+                      required
+                      type="date"
+                      value={formData.due_date}
+                      onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border bg-transparent outline-none focus:ring-2 transition-all"
+                      style={{
+                        borderColor: theme.border,
+                        color: theme.text,
+                        '--tw-ring-color': theme.primary
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1" style={labelStyle}>Description / Notes</label>
-            <div className="relative">
-              <FileText className="absolute left-3 top-3" size={18} style={{ color: isDark ? "#94A3B8" : "#9CA3AF" }} />
-              <textarea required rows="3" placeholder="Consultation details..." value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full pl-10 pr-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none" style={inputStyle} />
-            </div>
-          </div>
+              {/* Description */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold" style={{ color: theme.text }}>Description</label>
+                <div className="relative">
+                  <FileText className="absolute left-3 top-3" size={18} style={{ color: theme.muted }} />
+                  <textarea
+                    required
+                    rows="3"
+                    placeholder="Consultation details, services rendered..."
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border bg-transparent outline-none focus:ring-2 transition-all resize-none"
+                    style={{
+                      borderColor: theme.border,
+                      color: theme.text,
+                      '--tw-ring-color': theme.primary
+                    }}
+                  />
+                </div>
+              </div>
 
-          <div className="flex gap-3 pt-4">
-            <button type="button" onClick={onClose} className="flex-1 px-4 py-2 rounded-lg font-semibold border transition-colors hover:bg-gray-100 dark:hover:bg-gray-800" style={{ borderColor: isDark ? "#334155" : "#D1D5DB", color: isDark ? "#F1F5F9" : "#1F2937" }}>Cancel</button>
-            <button type="submit" disabled={loading} className="flex-1 px-4 py-2 rounded-lg font-semibold text-white transition-all hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100" style={{ background: "linear-gradient(135deg, #6366F1, #0EA5E9)" }}>
-              {loading ? "Creating..." : "Create Invoice"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+              {/* Actions */}
+              <div className="flex gap-3 pt-4 border-t" style={{ borderColor: theme.border }}>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex-1 px-4 py-3 rounded-xl font-bold transition-colors hover:bg-black/5 dark:hover:bg-white/5"
+                  style={{ color: theme.text }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 px-4 py-3 rounded-xl font-bold text-white transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100 shadow-lg"
+                  style={{ background: `linear-gradient(135deg, ${COLORS.light.primary}, ${COLORS.light.accent})` }}
+                >
+                  {loading ? "Creating..." : "Create Invoice"}
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

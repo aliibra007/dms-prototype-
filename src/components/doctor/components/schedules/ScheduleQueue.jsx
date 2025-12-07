@@ -4,33 +4,14 @@ import {
   Search,
   Calendar as CalendarIcon,
   List,
-  AlertTriangle,
   X
 } from 'lucide-react';
 import CalendarView from './components/CalendarView';
 import AppointmentQueue from './components/AppointmentQueue';
 import ScheduleManager from './components/ScheduleManager';
 
-const COLORS = {
-  light: {
-    primary: 'hsl(262, 52%, 47%)',
-    secondary: 'hsl(220, 25%, 95%)',
-    accent: 'hsl(199, 89%, 48%)',
-    muted: 'hsl(240, 10%, 85%)',
-    background: '#FFFFFF',
-    text: '#1F2937',
-    cardBg: '#FFFFFF',
-  },
-  dark: {
-    primary: 'hsl(262, 45%, 65%)',
-    secondary: 'hsl(220, 20%, 12%)',
-    accent: 'hsl(199, 80%, 55%)',
-    muted: 'hsl(240, 8%, 35%)',
-    background: '#0F172A',
-    text: '#F1F5F9',
-    cardBg: '#1E293B',
-  },
-};
+import { COLORS } from '../../styles/theme';
+import DemoModeBanner from '../shared/DemoModeBanner';
 
 const ScheduleQueue = ({ isDark }) => {
   const [activeTab, setActiveTab] = useState('queue');
@@ -77,26 +58,26 @@ const ScheduleQueue = ({ isDark }) => {
               <div className="flex justify-between items-center p-6 border-b" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
                 <h3 className="text-xl font-bold" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Add Time Slot</h3>
                 <button onClick={() => setShowAddSlot(false)} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <X size={20} style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
+                  <X size={20} style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }} />
                 </button>
               </div>
               <div className="p-6 space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>Date</label>
+                  <label className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Date</label>
                   <input type="date" className="w-full px-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500" style={{ background: isDark ? COLORS.dark.secondary : COLORS.light.secondary, color: isDark ? COLORS.dark.text : COLORS.light.text, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>Start Time</label>
+                    <label className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Start Time</label>
                     <input type="time" className="w-full px-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500" style={{ background: isDark ? COLORS.dark.secondary : COLORS.light.secondary, color: isDark ? COLORS.dark.text : COLORS.light.text, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>End Time</label>
+                    <label className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>End Time</label>
                     <input type="time" className="w-full px-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500" style={{ background: isDark ? COLORS.dark.secondary : COLORS.light.secondary, color: isDark ? COLORS.dark.text : COLORS.light.text, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }} />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.muted : COLORS.light.muted }}>Type</label>
+                  <label className="text-sm font-medium" style={{ color: isDark ? COLORS.dark.text : COLORS.light.text }}>Type</label>
                   <select className="w-full px-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500" style={{ background: isDark ? COLORS.dark.secondary : COLORS.light.secondary, color: isDark ? COLORS.dark.text : COLORS.light.text, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
                     <option value="appointment">Appointment</option>
                     <option value="blocked">Blocked Slot</option>
@@ -115,44 +96,31 @@ const ScheduleQueue = ({ isDark }) => {
 
       {/* Demo Mode Banner */}
       {showDemoBanner && (
-        <div className="flex items-center justify-between px-4 py-3 rounded-lg border border-orange-200 bg-orange-50 text-orange-800">
-          <div className="flex items-center gap-3">
-            <AlertTriangle size={20} className="text-orange-500" />
-            <p className="text-sm">
-              <span className="font-bold">Demo Mode:</span> You are viewing mock patient data. Changes will not be saved to a database.
-            </p>
-          </div>
-          <button 
-            onClick={() => setShowDemoBanner(false)}
-            className="p-1 hover:bg-orange-100 rounded-full transition-colors"
-          >
-            <X size={18} className="text-orange-500" />
-          </button>
-        </div>
+        <DemoModeBanner onClose={() => setShowDemoBanner(false)} theme={isDark ? COLORS.dark : COLORS.light} />
       )}
 
       {/* Header / Tabs */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex gap-2 p-1 rounded-lg border" style={{ borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-          <button 
-            onClick={() => setActiveTab('queue')} 
-            className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-all ${activeTab === 'queue' ? 'text-white shadow-md' : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} 
+          <button
+            onClick={() => setActiveTab('queue')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-all ${activeTab === 'queue' ? 'text-white shadow-md' : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
             style={{ background: activeTab === 'queue' ? `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})` : 'transparent' }}
           >
             <List size={18} />
             Queue
           </button>
-          <button 
-            onClick={() => setActiveTab('calendar')} 
-            className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-all ${activeTab === 'calendar' ? 'text-white shadow-md' : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} 
+          <button
+            onClick={() => setActiveTab('calendar')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-all ${activeTab === 'calendar' ? 'text-white shadow-md' : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
             style={{ background: activeTab === 'calendar' ? `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})` : 'transparent' }}
           >
             <CalendarIcon size={18} />
             Calendar
           </button>
-          <button 
-            onClick={() => setActiveTab('schedule')} 
-            className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-all ${activeTab === 'schedule' ? 'text-white shadow-md' : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`} 
+          <button
+            onClick={() => setActiveTab('schedule')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-md font-semibold transition-all ${activeTab === 'schedule' ? 'text-white shadow-md' : isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
             style={{ background: activeTab === 'schedule' ? `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})` : 'transparent' }}
           >
             <CalendarIcon size={18} />
@@ -160,9 +128,9 @@ const ScheduleQueue = ({ isDark }) => {
           </button>
         </div>
 
-        <button 
-          onClick={() => setShowAddSlot(true)} 
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105 shadow-lg" 
+        <button
+          onClick={() => setShowAddSlot(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold transition-all hover:scale-105 shadow-lg"
           style={{ background: `linear-gradient(135deg, ${isDark ? COLORS.dark.primary : COLORS.light.primary}, ${isDark ? COLORS.dark.accent : COLORS.light.accent})` }}
         >
           <Plus size={20} />
@@ -173,30 +141,31 @@ const ScheduleQueue = ({ isDark }) => {
       {/* Content */}
       <div className="transition-all duration-300">
         {activeTab === 'queue' && (
-          <AppointmentQueue 
-            isDark={isDark} 
-            appointments={appointments} 
-            onStatusChange={handleStatusChange} 
+          <AppointmentQueue
+            isDark={isDark}
+            theme={isDark ? COLORS.dark : COLORS.light}
+            appointments={appointments}
+            onStatusChange={handleStatusChange}
           />
         )}
 
         {activeTab === 'calendar' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-              <CalendarView 
-                isDark={isDark} 
-                selectedDate={selectedDate} 
+              <CalendarView
+                isDark={isDark}
+                selectedDate={selectedDate}
                 onDateSelect={setSelectedDate}
                 appointments={appointments}
                 offDays={offDays}
               />
             </div>
             <div className="space-y-6">
-               {/* Sidebar for daily details or quick stats can go here */}
-               <div className="rounded-xl p-6 border-2" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
-                  <h3 className="font-bold mb-2">Selected Date</h3>
-                  <p>{selectedDate.toDateString()}</p>
-               </div>
+              {/* Sidebar for daily details or quick stats can go here */}
+              <div className="rounded-xl p-6 border-2" style={{ background: isDark ? COLORS.dark.cardBg : COLORS.light.cardBg, borderColor: isDark ? COLORS.dark.muted : COLORS.light.muted }}>
+                <h3 className="font-bold mb-2">Selected Date</h3>
+                <p>{selectedDate.toDateString()}</p>
+              </div>
             </div>
           </div>
         )}
